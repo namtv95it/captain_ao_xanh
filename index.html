@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Captain Áo Xanh – Kênh của tôi</title>
+  <meta name="description" content="Theo dõi Captain Áo Xanh trên TikTok và Phê Sữa Review trên YouTube – nơi chia sẻ nội dung giải trí và review chất lượng." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Particle Canvas -->
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Noise overlay -->
+  <div class="noise"></div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="logo-wrap">
+      <img src="captain.png" alt="Captain Áo Xanh" class="logo-img" />
+      <span class="logo-text">Captain Áo Xanh</span>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-content">
+    <div class="page-intro">
+      <h1 class="page-title">Kênh của <span class="gradient-text">tôi</span></h1>
+      <p class="page-sub">Chọn kênh bạn muốn theo dõi 👇</p>
+    </div>
+
+    <div class="cards-grid">
+
+      <!-- TikTok Card -->
+      <a
+        href="https://www.tiktok.com/@captain_ao_xanh"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="channel-card tiktok-card"
+        id="tiktok-card"
+        aria-label="Kênh TikTok Captain Áo Xanh"
+      >
+        <div class="card-glow"></div>
+        <div class="card-inner">
+          <div class="platform-badge tiktok-badge">TikTok</div>
+          <div class="channel-icon tiktok-icon">
+            <!-- TikTok SVG -->
+            <svg viewBox="0 0 24 24" fill="currentColor" width="52" height="52">
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.3 6.3 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.22 8.22 0 0 0 4.81 1.55V6.79a4.85 4.85 0 0 1-1.04-.1z"/>
+            </svg>
+          </div>
+          <div class="channel-info">
+            <h2 class="channel-name">Captain Áo Xanh</h2>
+            <p class="channel-desc">
+              Nội dung giải trí, hài hước &amp; những khoảnh khắc đời thường đáng yêu nhất. Đừng bỏ lỡ!
+            </p>
+          </div>
+          <div class="card-cta tiktok-cta">
+            Theo dõi ngay
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="card-shine"></div>
+        </div>
+      </a>
+
+      <!-- YouTube Card -->
+      <a
+        href="https://www.youtube.com/@PheSuaReview"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="channel-card youtube-card"
+        id="youtube-card"
+        aria-label="Kênh YouTube Phê Sữa Review"
+      >
+        <div class="card-glow"></div>
+        <div class="card-inner">
+          <div class="platform-badge youtube-badge">YouTube</div>
+          <div class="channel-icon youtube-icon">
+            <!-- YouTube SVG -->
+            <svg viewBox="0 0 24 24" fill="currentColor" width="56" height="56">
+              <path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/>
+            </svg>
+          </div>
+          <div class="channel-info">
+            <h2 class="channel-name">Phê Sữa Review</h2>
+            <p class="channel-desc">
+              Review đồ uống, trà sữa &amp; cà phê từ bình dân đến cao cấp. Mỗi ngụm đều có câu chuyện!
+            </p>
+          </div>
+          <div class="card-cta youtube-cta">
+            Đăng ký kênh
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="card-shine"></div>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <p>© 2025 <span class="gradient-text">Captain Áo Xanh</span> · Made with ❤️ &amp; ☕</p>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
