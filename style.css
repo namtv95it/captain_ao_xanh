@@ -182,6 +182,7 @@ body {
 
 .channel-card:nth-child(2) { animation-delay: 0.12s; }
 .channel-card:hover { transform: translateY(-8px) scale(1.01); }
+.channel-card:active { transform: scale(0.96); transition: transform 0.1s; }
 
 /* Lớp nền xoay 360 độ tạo viền vì nằm dưới .card-inner */
 .card-glow {
@@ -351,11 +352,18 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 14px;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  padding: 13px 30px;
+  padding: 14px 32px;
   border-radius: 99px;
   transition: transform var(--transition), box-shadow var(--transition);
+  animation: pulse-cta 2s infinite;
+}
+
+@keyframes pulse-cta {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
 }
 
 .tiktok-cta {
@@ -365,7 +373,7 @@ body {
   box-shadow: 0 6px 30px rgba(105,201,208,0.4);
 }
 
-.channel-card:hover .tiktok-cta { transform: scale(1.05); }
+.channel-card:hover .tiktok-cta { animation-play-state: paused; transform: scale(1.08); }
 
 .youtube-cta {
   background: linear-gradient(135deg, var(--yt-red), #ff6600);
@@ -374,7 +382,7 @@ body {
   box-shadow: 0 6px 30px rgba(255,0,0,0.4);
 }
 
-.channel-card:hover .youtube-cta { transform: scale(1.05); }
+.channel-card:hover .youtube-cta { animation-play-state: paused; transform: scale(1.08); }
 
 /* Shine sweep – continuous animation */
 .card-shine {
@@ -424,8 +432,11 @@ body {
    RESPONSIVE
    ========================================= */
 @media (max-width: 640px) {
-  .site-header { padding: 20px 20px 0; }
-  .cards-grid { grid-template-columns: 1fr; gap: 24px; }
-  .card-inner { min-height: auto; padding: 32px 24px 28px; }
-  .main-content { padding: 28px 16px 36px; gap: 28px; }
+  .site-header { padding: 16px 16px 0; }
+  .cards-grid { grid-template-columns: 1fr; gap: 32px; padding: 0 8px; }
+  .card-inner { min-height: auto; padding: 36px 20px 32px; gap: 20px; }
+  .main-content { padding: 20px 12px 40px; gap: 32px; }
+  .channel-name { font-size: 1.6rem; }
+  .card-cta { padding: 16px 32px; font-size: 1rem; width: 100%; justify-content: center; }
+  .channel-icon { width: 90px; height: 90px; }
 }
