@@ -37,33 +37,63 @@
     <div class="cards-grid">
 
       <!-- YouTube Card -->
-      <a
-        href="https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw"
-        target="_blank"
-        rel="noopener noreferrer"
+      <div
         class="channel-card youtube-card"
         id="youtube-card"
-        aria-label="Kênh YouTube Captain Áo Xanh"
       >
         <div class="card-glow"></div>
         <div class="card-inner">
-          <div class="platform-badge youtube-badge">YouTube</div>
+          <div class="card-header-row">
+            <div class="platform-badge youtube-badge">YouTube</div>
+          </div>
+
           <div class="channel-icon youtube-icon">
             <img src="channels4_profile.jpg" alt="Phê Sữa Review" class="channel-avatar" />
           </div>
           <div class="channel-info">
             <h2 class="channel-name">Phê Sữa Review</h2>
-            <p class="channel-desc">
-              Review phim điện ảnh, phim AI sáng tạo &amp; phim hoạt hình Sa Điêu anh hùng truyện. Mỗi tập đều cực kỳ đáng xem!
-            </p>
+            <a
+              href="https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="card-cta youtube-cta"
+            >
+              Đăng ký kênh
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
           </div>
-          <div class="card-cta youtube-cta">
-            Đăng ký kênh
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+
+          <!-- Video nổi bật -->
+          <div class="featured-videos">
+            <h3 class="featured-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              Video nổi bật
+            </h3>
+            <div class="video-list">
+              <a
+                href="https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="video-item"
+              >
+                <div class="video-thumb">
+                  <img src="vddn-03.png" alt="Vùng Đất Đảo Ngược Phần 3" />
+                  <div class="play-overlay">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+                </div>
+                <div class="video-details">
+                  <h4 class="video-title">Vùng Đất Đảo Ngược Phần 3</h4>
+                  <p class="video-meta">Phê Sữa Review · Phim AI Sáng Tạo</p>
+                </div>
+                <span class="video-watch-btn">Xem</span>
+              </a>
+            </div>
           </div>
+
           <div class="card-shine"></div>
         </div>
-      </a>
+      </div>
 
       <!-- TikTok Card -->
       <a
