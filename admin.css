@@ -1,0 +1,872 @@
+/* =========================================
+   admin.css – Admin Panel Styles
+   PIN Pad + Dashboard + Modal + Toast
+   ========================================= */
+
+/* ─── HIDDEN ─────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ─── PIN SCREEN ──────────────────────────── */
+.pin-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pin-card {
+  background: rgba(13, 13, 26, 0.97);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 36px;
+  padding: 52px 44px 44px;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  box-shadow:
+    0 50px 100px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: fade-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ─── PIN HEADER ─────────────────────────── */
+.pin-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.pin-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid transparent;
+  background:
+    linear-gradient(var(--bg2), var(--bg2)) padding-box,
+    linear-gradient(135deg, var(--tiktok-cyan), var(--tiktok-pink)) border-box;
+  box-shadow: 0 0 24px rgba(105, 201, 208, 0.4);
+  animation: pulse-avatar 2.5s ease-in-out infinite;
+}
+
+.pin-title {
+  font-size: 1.45rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin-top: 4px;
+}
+
+.pin-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ─── PIN DOTS ───────────────────────────── */
+.pin-dots {
+  display: flex;
+  gap: 14px;
+}
+
+.pin-dot {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pin-dot.filled {
+  background: linear-gradient(135deg, var(--tiktok-cyan), var(--tiktok-pink));
+  border-color: transparent;
+  box-shadow: 0 0 14px rgba(105, 201, 208, 0.7);
+  transform: scale(1.1);
+}
+
+.pin-dot.pop {
+  transform: scale(1.5);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-10px); }
+  35%       { transform: translateX(10px); }
+  55%       { transform: translateX(-7px); }
+  75%       { transform: translateX(7px); }
+}
+
+.pin-dots.shake {
+  animation: shake 0.5s ease;
+}
+
+.pin-dots.success .pin-dot {
+  background: #22c55e;
+  border-color: transparent;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.8);
+  transform: scale(1.1);
+}
+
+/* ─── PIN MESSAGE ────────────────────────── */
+.pin-message {
+  font-size: 0.85rem;
+  min-height: 20px;
+  color: var(--text-muted);
+  text-align: center;
+  transition: color 0.2s;
+}
+
+.pin-message.error { color: #ff6b6b; font-weight: 600; }
+
+/* ─── PIN PAD ────────────────────────────── */
+.pin-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.pin-btn {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  transition: all 0.12s ease;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  min-height: 74px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pin-btn-num {
+  font-size: 1.55rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.pin-btn-sub {
+  font-size: 0.42rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Ripple effect */
+.pin-btn::after {
+  content: '';
+  position: absolute;
+  width: 120%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(105, 201, 208, 0.25) 0%, transparent 70%);
+  transform: scale(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.pin-btn:active::after {
+  transform: scale(1);
+  opacity: 1;
+  transition: none;
+}
+
+.pin-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(105, 201, 208, 0.4);
+  transform: scale(1.04);
+  box-shadow: 0 0 20px rgba(105, 201, 208, 0.15);
+}
+
+.pin-btn:active {
+  transform: scale(0.91);
+  background: rgba(105, 201, 208, 0.15);
+  border-color: rgba(105, 201, 208, 0.6);
+}
+
+.pin-btn-empty {
+  background: transparent !important;
+  border: none !important;
+  cursor: default !important;
+  pointer-events: none;
+}
+
+.pin-btn-back {
+  color: var(--text-muted);
+}
+
+.pin-btn-back:hover { color: var(--text); }
+
+/* ─── ADMIN DASHBOARD ────────────────────── */
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.admin-header {
+  position: relative;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 40px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(7, 7, 15, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-main {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  padding: 44px;
+  max-width: 1040px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.admin-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+}
+
+.admin-section-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--yt-red);
+}
+
+/* ─── BUTTONS ────────────────────────────── */
+.admin-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--yt-red), #ff6600);
+  color: #fff;
+  border: none;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.admin-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(255, 0, 0, 0.4);
+}
+
+.admin-btn-primary:active { transform: scale(0.96); }
+
+.admin-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.admin-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ─── VIDEO ADMIN LIST ───────────────────── */
+.video-admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.video-admin-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 16px;
+  transition: all var(--transition);
+  animation: fade-up 0.4s ease both;
+}
+
+.video-admin-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.video-admin-card.hidden-video { opacity: 0.45; }
+
+.video-admin-thumb {
+  width: 120px;
+  height: 68px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.video-admin-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-admin-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.video-admin-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.video-admin-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.video-admin-link {
+  font-size: 0.76rem;
+  color: var(--tiktok-cyan);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.video-admin-link:hover { opacity: 0.75; text-decoration: underline; }
+
+.video-admin-status { flex-shrink: 0; }
+
+.status-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 99px;
+  letter-spacing: 0.3px;
+}
+
+.status-badge.visible {
+  background: rgba(34, 197, 94, 0.14);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-badge.hidden-badge {
+  background: rgba(156, 163, 175, 0.08);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.18);
+}
+
+.video-admin-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.edit-btn {
+  background: rgba(105, 201, 208, 0.12);
+  color: var(--tiktok-cyan);
+  border-color: rgba(105, 201, 208, 0.25);
+}
+
+.edit-btn:hover {
+  background: rgba(105, 201, 208, 0.25);
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(105, 201, 208, 0.2);
+}
+
+.delete-btn {
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.22);
+}
+
+.delete-btn:hover {
+  background: rgba(255, 107, 107, 0.22);
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(255, 107, 107, 0.2);
+}
+
+.status-badge.featured-badge {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.28);
+}
+
+.action-btn.featured-btn {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.action-btn.featured-btn:hover,
+.action-btn.featured-btn.featured-active {
+  background: rgba(245, 158, 11, 0.22);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.45);
+  transform: scale(1.05);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.2);
+}
+
+/* ─── LOADING / EMPTY ────────────────────── */
+.admin-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 80px 20px;
+  color: var(--text-muted);
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--tiktok-cyan);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.admin-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.admin-empty.error { color: #ff6b6b; }
+
+/* ─── MODAL ──────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fade-in 0.2s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-card {
+  background: #0e0e1c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 26px;
+  padding: 38px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8);
+  animation: fade-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.modal-close {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+}
+
+/* ─── FORM ───────────────────────────────── */
+.modal-form { display: flex; flex-direction: column; gap: 20px; }
+
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group input[type="number"] {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 13px;
+  padding: 13px 16px;
+  color: var(--text);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+}
+
+.form-group input:focus {
+  border-color: var(--tiktok-cyan);
+  box-shadow: 0 0 0 3px rgba(105, 201, 208, 0.12);
+}
+
+.form-group input::placeholder { color: rgba(255, 255, 255, 0.2); }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group-toggle {
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 13px;
+  padding: 13px 16px;
+}
+
+/* Thumbnail preview */
+.thumb-preview {
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 90px;
+  display: flex;
+  margin-top: 4px;
+}
+
+.thumb-preview img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ─── UPLOAD AREA ────────────────────────── */
+.upload-area {
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  position: relative;
+}
+
+.upload-area:hover,
+.upload-area.drag-over {
+  border-color: var(--tiktok-cyan);
+  background: rgba(105, 201, 208, 0.06);
+}
+
+.upload-area.drag-over {
+  transform: scale(1.01);
+  box-shadow: 0 0 0 3px rgba(105, 201, 208, 0.15);
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.upload-placeholder svg {
+  color: rgba(255, 255, 255, 0.2);
+  transition: color 0.2s;
+}
+
+.upload-area:hover .upload-placeholder svg {
+  color: var(--tiktok-cyan);
+}
+
+.upload-placeholder p {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.upload-browse {
+  color: var(--tiktok-cyan);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+.upload-hint {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.3px;
+}
+
+/* Upload preview */
+.upload-preview-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 160px;
+  overflow: hidden;
+}
+
+.upload-preview-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.upload-preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 10px 14px;
+  transition: background 0.2s;
+}
+
+.upload-preview-wrap:hover .upload-preview-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.upload-size-info {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 3px 10px;
+  border-radius: 99px;
+  backdrop-filter: blur(6px);
+}
+
+.upload-remove-btn {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: none;
+  background: rgba(255, 107, 107, 0.85);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0;
+}
+
+.upload-preview-wrap:hover .upload-remove-btn {
+  opacity: 1;
+}
+
+/* Upload loading state */
+.upload-area.uploading .upload-placeholder svg {
+  animation: spin 1s linear infinite;
+}
+
+/* ─── TOGGLE SWITCH ──────────────────────── */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  transition: all 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: linear-gradient(135deg, var(--tiktok-cyan), var(--purple));
+  border-color: transparent;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(22px);
+}
+
+/* ─── MODAL FOOTER ───────────────────────── */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── TOAST ──────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 14px 28px;
+  border-radius: 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  backdrop-filter: blur(20px);
+  animation: toast-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+@keyframes toast-in {
+  from { transform: translateX(-50%) translateY(24px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+.toast.success {
+  background: rgba(34, 197, 94, 0.18);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #22c55e;
+}
+
+.toast.error {
+  background: rgba(255, 107, 107, 0.18);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  color: #ff6b6b;
+}
+
+.toast.info {
+  background: rgba(105, 201, 208, 0.18);
+  border: 1px solid rgba(105, 201, 208, 0.4);
+  color: var(--tiktok-cyan);
+}
+
+/* ─── RESPONSIVE ─────────────────────────── */
+@media (max-width: 640px) {
+  .admin-header { padding: 14px 18px; }
+  .admin-header .logo-text { display: none; }
+  .admin-header-actions { gap: 6px; }
+  .admin-btn-secondary { padding: 8px 12px; font-size: 0.82rem; }
+
+  .admin-main { padding: 24px 14px; }
+
+  .pin-card { padding: 36px 22px 32px; max-width: 340px; }
+  .pin-btn { min-height: 64px; }
+  .pin-btn-num { font-size: 1.4rem; }
+
+  .video-admin-card { flex-wrap: wrap; gap: 12px; }
+  .video-admin-thumb { width: 100%; height: 120px; }
+  .video-admin-actions { width: 100%; justify-content: flex-end; }
+
+  .modal-card { padding: 24px 18px; }
+  .form-row { grid-template-columns: 1fr; }
+}

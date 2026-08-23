@@ -38,6 +38,53 @@
       <p class="page-sub">Chọn kênh bạn muốn theo dõi 👇</p>
     </div>
 
+    <!-- ===== FEATURED VIDEO HERO ===== -->
+    <div class="featured-hero hidden" id="featured-hero">
+      <div class="featured-hero-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        Video nổi bật
+      </div>
+      <a class="featured-hero-card" id="featured-hero-link"
+         href="#" target="_blank" rel="noopener noreferrer">
+        <div class="featured-hero-thumb">
+          <img id="featured-hero-img" src="" alt="" />
+          <div class="featured-hero-overlay">
+            <div class="featured-play-btn">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            <!-- Mobile: title overlay (ẩn trên desktop qua CSS) -->
+            <div class="featured-overlay-info">
+              <p class="featured-overlay-channel" id="featured-overlay-channel"></p>
+              <h2 class="featured-overlay-title" id="featured-overlay-title"></h2>
+              <span class="featured-overlay-cta">
+                Xem ngay
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="featured-hero-info">
+          <h2 class="featured-hero-title" id="featured-hero-title">Đang tải...</h2>
+          <p class="featured-hero-channel" id="featured-hero-channel"></p>
+          <span class="featured-hero-cta">
+            Xem ngay
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </div>
+        <div class="featured-hero-glow"></div>
+      </a>
+    </div>
+
     <div class="cards-grid">
 
       <!-- YouTube Card -->
@@ -62,7 +109,7 @@
             </a>
           </div>
 
-          <!-- Video nổi bật -->
+          <!-- Video nổi bật – render động từ Firestore -->
           <div class="featured-videos">
             <h3 class="featured-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -70,39 +117,10 @@
               </svg>
               Video nổi bật
             </h3>
-            <div class="video-list">
-              <a href="https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw" target="_blank"
-                rel="noopener noreferrer" class="video-item">
-                <div class="video-thumb">
-                  <img src="quy-khu.png" alt="Quy Khư - Phần 1" />
-                  <div class="play-overlay">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="video-details">
-                  <h4 class="video-title">Quy Khư - Phần 1</h4>
-                  <p class="video-meta">Phê Sữa Review</p>
-                </div>
-                <span class="video-watch-btn">Xem</span>
-              </a>
-              <a href="https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw" target="_blank"
-                rel="noopener noreferrer" class="video-item">
-                <div class="video-thumb">
-                  <img src="vddn-04.png" alt="Vùng Đất Đảo Ngược Tập 4" />
-                  <div class="play-overlay">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                </div>
-                <div class="video-details">
-                  <h4 class="video-title">Vùng Đất Đảo Ngược Tập 4</h4>
-                  <p class="video-meta">Phê Sữa Review</p>
-                </div>
-                <span class="video-watch-btn">Xem</span>
-              </a>
+            <!-- Skeleton loading -->
+            <div class="video-list" id="video-list">
+              <div class="video-skeleton"></div>
+              <div class="video-skeleton"></div>
             </div>
           </div>
 
@@ -143,6 +161,10 @@
     <p>© 2025 <span class="gradient-text">Captain Áo Xanh</span> · Made with ❤️ &amp; ☕</p>
   </footer>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="main.js"></script>
 </body>
 

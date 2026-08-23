@@ -589,3 +589,276 @@ body {
   .card-cta { padding: 16px 32px; font-size: 1rem; width: 100%; justify-content: center; }
   .channel-icon { width: 90px; height: 90px; }
 }
+
+/* =========================================
+   FEATURED VIDEO HERO
+   ========================================= */
+.featured-hero {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fade-up 0.7s ease both;
+  animation-delay: 0.1s;
+}
+
+.featured-hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 6px 16px;
+  border-radius: 99px;
+  align-self: flex-start;
+}
+
+.featured-hero-card {
+  display: flex;
+  align-items: stretch;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--bg2);
+  border: 1px solid rgba(255,255,255,0.07);
+  text-decoration: none;
+  color: var(--text);
+  position: relative;
+  transition: transform var(--transition), box-shadow var(--transition);
+  min-height: 180px;
+}
+
+.featured-hero-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(245,158,11,0.2);
+}
+
+/* Thumbnail bên trái */
+.featured-hero-thumb {
+  width: 55%;
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.featured-hero-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.featured-hero-card:hover .featured-hero-thumb img {
+  transform: scale(1.04);
+}
+
+.featured-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent 50%, var(--bg2) 100%),
+              linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.featured-play-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
+  transition: all 0.25s ease;
+  transform: scale(0.9);
+}
+
+.featured-hero-card:hover .featured-play-btn {
+  transform: scale(1.08);
+  box-shadow: 0 0 50px rgba(245, 158, 11, 0.7);
+}
+
+/* Info bên phải */
+.featured-hero-info {
+  flex: 1;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.featured-hero-title {
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+.featured-hero-channel {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.featured-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #000;
+  border-radius: 99px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  align-self: flex-start;
+  transition: all 0.2s;
+  box-shadow: 0 6px 24px rgba(245,158,11,0.35);
+}
+
+.featured-hero-card:hover .featured-hero-cta {
+  transform: scale(1.05);
+  box-shadow: 0 8px 32px rgba(245,158,11,0.5);
+}
+
+/* Ambient glow */
+.featured-hero-glow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* ── Mobile overlay info (ẩn trên desktop) ── */
+.featured-overlay-info {
+  display: none; /* ẩn trên desktop */
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.featured-overlay-channel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.featured-overlay-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.featured-overlay-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 8px 18px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #000;
+  border-radius: 99px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  align-self: flex-start;
+  box-shadow: 0 4px 16px rgba(245,158,11,0.4);
+}
+
+@media (max-width: 640px) {
+  /* ── Mobile: Cinematic overlay layout ── */
+  .featured-hero-card {
+    flex-direction: column;
+    min-height: auto;
+    border-radius: 20px;
+  }
+
+  .featured-hero-thumb {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    position: relative;
+  }
+
+  /* Overlay gradient mạnh từ dưới lên */
+  .featured-hero-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(8, 8, 18, 0.97) 0%,
+      rgba(8, 8, 18, 0.7) 38%,
+      transparent 65%
+    );
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 18px 18px 20px;
+    gap: 0;
+  }
+
+  /* Play button: góc trên phải, nhỏ hơn */
+  .featured-play-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 42px;
+    height: 42px;
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+  }
+
+  /* Bật overlay info trên mobile */
+  .featured-overlay-info {
+    display: flex;
+  }
+
+  /* Ẩn desktop info section */
+  .featured-hero-info {
+    display: none;
+  }
+
+  .featured-hero-glow { display: none; }
+}
+
+/* =========================================
+   VIDEO SKELETON LOADING
+   ========================================= */
+.video-skeleton {
+  height: 68px;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
