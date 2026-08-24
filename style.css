@@ -864,164 +864,70 @@ body {
 }
 
 /* =========================================
-   TIKTOK GUIDE BANNER (SIÊU NỔI BẬT)
+   TOP NOTICE BAR (THÔNG BÁO ĐẦU TRANG)
    ========================================= */
-.tiktok-guide-banner {
-  position: fixed;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 24px);
-  max-width: 520px;
-  background: linear-gradient(135deg, #18142a 0%, #0d0d1a 100%);
-  border: 1.5px solid rgba(245, 158, 11, 0.6);
-  border-radius: 20px;
-  padding: 16px 18px;
-  z-index: 10000;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(245, 158, 11, 0.35);
-  animation: bannerAttention 0.45s cubic-bezier(0.16, 1, 0.3, 1), bannerGlowPulse 2.5s infinite ease-in-out alternate;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.tiktok-guide-banner.hidden {
-  display: none !important;
-}
-
-@keyframes bannerAttention {
-  0%   { transform: translate(-50%, -120%) scale(0.9); opacity: 0; }
-  100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
-}
-
-@keyframes bannerGlowPulse {
-  0%   { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 18px rgba(245, 158, 11, 0.25); border-color: rgba(245, 158, 11, 0.5); }
-  100% { box-shadow: 0 16px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(238, 29, 82, 0.5); border-color: rgba(238, 29, 82, 0.8); }
-}
-
-.banner-glow {
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.4) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.banner-content {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.top-notice-bar {
   position: relative;
-  z-index: 1;
+  z-index: 100;
+  background: linear-gradient(90deg, #92400e, #b45309, #92400e);
+  background-size: 200% 100%;
+  animation: noticeSlide 3s linear infinite;
+  padding: 10px 16px;
+  width: 100%;
 }
 
-.banner-top-row {
+@keyframes noticeSlide {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.top-notice-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
+  max-width: 680px;
+  margin: 0 auto;
 }
 
-.banner-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, #f59e0b, #ef4444);
-  color: #000;
-  font-weight: 800;
-  font-size: 0.72rem;
-  letter-spacing: 0.5px;
-  padding: 3px 10px;
-  border-radius: 99px;
-  text-transform: uppercase;
+.top-notice-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
-.banner-close {
-  background: rgba(255, 255, 255, 0.1);
+.top-notice-text {
+  flex: 1;
+  font-size: 0.82rem;
+  color: #fef3c7;
+  line-height: 1.4;
+}
+
+.top-notice-text strong {
+  color: #fff;
+}
+
+.top-notice-close {
+  background: rgba(255, 255, 255, 0.2);
   border: none;
-  color: #ddd;
-  font-size: 1.25rem;
-  cursor: pointer;
+  color: #fff;
+  font-size: 1rem;
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition);
-}
-
-.banner-close:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-}
-
-.banner-main-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.banner-icon-pulse {
-  color: #f59e0b;
+  cursor: pointer;
   flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: rgba(245, 158, 11, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: pulseIcon 1.5s infinite;
+  transition: background 0.2s;
 }
 
-@keyframes pulseIcon {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.1); }
-  100% { transform: scale(1); }
+.top-notice-close:hover,
+.top-notice-close:active {
+  background: rgba(255, 255, 255, 0.4);
 }
 
-.banner-title {
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 4px;
-}
 
-.banner-sub {
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: #cbd5e1;
-}
 
-.banner-sub strong {
-  color: #f59e0b;
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.banner-arrow-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px dashed rgba(245, 158, 11, 0.5);
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #fde047;
-  text-align: center;
-}
-
-.banner-arrow-indicator strong {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 1px 6px;
-  border-radius: 6px;
-  margin: 0 3px;
-}
 
 /* =========================================
    INLINE COPY LINK CARD (TRỰC TIẾP TRÊN THẺ YOUTUBE)

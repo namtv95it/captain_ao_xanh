@@ -23,6 +23,17 @@
   <!-- Noise overlay -->
   <div class="noise"></div>
 
+  <!-- ===== THÔNG BÁO ĐẦU TRANG ===== -->
+  <div class="top-notice-bar" id="tiktok-banner">
+    <div class="top-notice-content">
+      <span class="top-notice-icon">⚠️</span>
+      <div class="top-notice-text">
+        Để xem YouTube: bấm <strong>···</strong> góc phải trên → chọn <strong>"Mở trong trình duyệt"</strong>
+      </div>
+      <button class="top-notice-close" onclick="document.getElementById('tiktok-banner').style.display='none'" aria-label="Đóng">✕</button>
+    </div>
+  </div>
+
   <!-- ===== HEADER ===== -->
   <header class="site-header">
     <div class="logo-wrap">
@@ -176,34 +187,7 @@
     <p>© 2025 <span class="gradient-text">Captain Áo Xanh</span> · Made with ❤️ &amp; ☕</p>
   </footer>
 
-  <!-- ===== TIKTOK NOTICE BANNER (Bấm X hoặc bấm bất kỳ đâu để tắt) ===== -->
-  <div class="tiktok-guide-banner" id="tiktok-banner" onclick="this.classList.add('hidden')">
-    <div class="banner-glow"></div>
-    <div class="banner-content">
-      <div class="banner-top-row">
-        <span class="banner-tag">⚠️ HƯỚNG DẪN MỞ LINK</span>
-        <button class="banner-close" aria-label="Đóng">&times;</button>
-      </div>
-      <div class="banner-main-row">
-        <div class="banner-icon-pulse">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-        </div>
-        <div class="banner-text">
-          <p class="banner-title">Bạn đang mở bằng trình duyệt TikTok</p>
-          <p class="banner-sub">
-            Để xem video YouTube mượt nhất: Bấm dấu <strong>···</strong> góc trên bên phải ↗ rồi chọn <strong>"Mở trong trình duyệt"</strong> (Safari / Chrome).
-          </p>
-        </div>
-      </div>
-      <div class="banner-arrow-indicator">
-        <span>Bấm dấu <strong>···</strong> ở góc trên bên phải ↗ (hoặc chạm vào đây để ẩn)</span>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Toast thông báo đã copy -->
   <div class="toast hidden" id="toast">Đã sao chép đường dẫn!</div>
