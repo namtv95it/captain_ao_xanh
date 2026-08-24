@@ -889,7 +889,7 @@ body {
 .top-right-pointer {
   position: absolute;
   top: 15px;
-  right: 15px;
+  right: 35px;
   color: #fbbf24;
   z-index: 100000;
   animation: pointerBounce 0.8s infinite alternate ease-in-out;
