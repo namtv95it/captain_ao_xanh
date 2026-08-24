@@ -236,66 +236,125 @@ async function loadVideosFromFirestore() {
   }
 }
 
-// ─── YOUTUBE DEEP LINK HANDLER (Bypass In-App Browser) ───
-function openYouTubeLink(url) {
+// ─── TIKTOK & YOUTUBE MODAL / COPY HANDLER ───
+const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+const isTikTok = /TikTok|bytedance/i.test(ua);
+const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+
+// Hiển thị banner nhắc nhở nếu đang mở bằng trình duyệt TikTok
+const tiktokBanner = document.getElementById('tiktok-banner');
+const bannerClose = document.getElementById('banner-close');
+if (isTikTok && tiktokBanner) {
+  tiktokBanner.classList.remove('hidden');
+  bannerClose?.addEventListener('click', () => {
+    tiktokBanner.classList.add('hidden');
+  });
+}
+
+// Modal Elements
+const ytModal = document.getElementById('yt-modal');
+const modalCloseBtn = document.getElementById('modal-close-btn');
+const ytLinkInput = document.getElementById('yt-link-input');
+const ytCopyBtn = document.getElementById('yt-copy-btn');
+const modalDirectBtn = document.getElementById('modal-direct-btn');
+const toastEl = document.getElementById('toast');
+
+function showToast(msg = 'Đã sao chép đường dẫn!') {
+  if (!toastEl) return;
+  toastEl.textContent = msg;
+  toastEl.classList.remove('hidden');
+  setTimeout(() => {
+    toastEl.classList.add('hidden');
+  }, 2500);
+}
+
+function openYtModal(url) {
+  if (!ytModal) return;
+  ytLinkInput.value = url;
+  modalDirectBtn.href = url;
+  ytModal.classList.remove('hidden');
+}
+
+function closeYtModal() {
+  if (!ytModal) return;
+  ytModal.classList.add('hidden');
+}
+
+// Xử lý sự kiện Modal
+modalCloseBtn?.addEventListener('click', closeYtModal);
+ytModal?.addEventListener('click', (e) => {
+  if (e.target === ytModal) closeYtModal();
+});
+
+// Copy link button
+ytCopyBtn?.addEventListener('click', async () => {
+  const url = ytLinkInput.value;
   if (!url) return;
 
-  const ua = navigator.userAgent || navigator.vendor || window.opera || '';
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
-  const isTikTok = /TikTok|bytedance/i.test(ua);
-  const isIOS = /iPhone|iPad|iPod/i.test(ua);
-  const isAndroid = /Android/i.test(ua);
-
-  // Nếu không phải link YouTube hoặc ở Desktop thì mở bình thường
-  if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
-    window.open(url, '_blank');
-    return;
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(url);
+    } else {
+      // Fallback copy cho một số In-App WebView cũ
+      ytLinkInput.select();
+      ytLinkInput.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+    }
+    showToast('✅ Đã sao chép link! Hãy dán vào Safari/Chrome nhé.');
+    ytCopyBtn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span>Đã chép!</span>
+    `;
+    setTimeout(() => {
+      ytCopyBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        <span>Sao chép</span>
+      `;
+    }, 2500);
+  } catch (err) {
+    showToast('Lỗi khi sao chép, vui lòng copy thủ công');
   }
+});
 
-  if (isMobile) {
-    // 1. Tách channel ID / video ID để tạo deep link
-    // Scheme hỗ trợ: vnd.youtube:// hoặc youtube://
+// Điều hướng thông minh: Nếu mở từ TikTok / In-App Browser thì bật Popup Modal + Copy
+function handleYouTubeClick(url) {
+  if (!url) return;
+
+  if (isTikTok) {
+    // Nếu trong TikTok WebView: mở modal hướng dẫn copy & chuyển trình duyệt
+    openYtModal(url);
+  } else if (isMobile) {
+    // Nếu trên mobile khác, thử mở deep link app
     let deepLink = url.replace(/^https?:\/\/(www\.)?youtube\.com\//i, 'vnd.youtube://');
     deepLink = deepLink.replace(/^https?:\/\/youtu\.be\//i, 'vnd.youtube://watch?v=');
-
-    // Trên iOS scheme chuẩn thường là youtube:// hoặc vnd.youtube://
-    const iosDeepLink = url.replace(/^https?:\/\/(www\.)?/i, 'youtube://');
-
-    const targetAppUrl = isIOS ? iosDeepLink : deepLink;
-
-    // Thử mở App YouTube trước
-    const now = Date.now();
-    window.location.href = targetAppUrl;
-
-    // Fallback: Nếu sau 800ms vẫn ở lại trang web (chưa mở được app YouTube)
+    window.location.href = deepLink;
     setTimeout(() => {
-      if (Date.now() - now < 1500) {
-        // Nếu là Android trong In-App Browser, có thể dùng Intent URI để mở App / Chrome
-        if (isAndroid) {
-          const rawUrl = url.replace(/^https?:\/\//i, '');
-          const intentUrl = `intent://${rawUrl}#Intent;scheme=https;package=com.google.android.youtube;end`;
-          window.location.href = intentUrl;
-        } else {
-          // Mở link gốc
-          window.location.href = url;
-        }
-      }
-    }, 800);
+      window.location.href = url;
+    }, 600);
   } else {
+    // Desktop mở bình thường tab mới
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
 
-// Bắt sự kiện click toàn bộ thẻ <a> trỏ tới YouTube
+// Lắng nghe click tất cả link YouTube trên toàn trang
 document.addEventListener('click', (e) => {
   const link = e.target.closest('a');
   if (!link) return;
+
+  // Bỏ qua nếu là nút thử mở lại bên trong modal
+  if (link.id === 'modal-direct-btn') return;
 
   const href = link.getAttribute('href');
   if (!href) return;
 
   if (href.includes('youtube.com') || href.includes('youtu.be')) {
     e.preventDefault();
-    openYouTubeLink(href);
+    handleYouTubeClick(href);
   }
 });
