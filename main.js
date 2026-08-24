@@ -236,14 +236,25 @@ async function loadVideosFromFirestore() {
   }
 }
 
-// ─── TIKTOK & YOUTUBE MODAL / COPY HANDLER ───
-// ─── TIKTOK & INLINE COPY HANDLER ───
-const ua = navigator.userAgent || navigator.vendor || window.opera || '';
-const isTikTok = /TikTok|bytedance/i.test(ua);
+// ─── IN-APP BROWSER DETECTION ───
+const ua = navigator.userAgent || '';
 
-// Hiển thị banner nhắc nhở nếu đang mở bằng trình duyệt TikTok
+// Detect TikTok - đầy đủ các UA string TikTok dùng
+const isTikTok = /TikTok|bytedance|musical_li|aweme|Musically|trill|lark/i.test(ua);
+
+// Detect bất kỳ in-app browser / WebView nào (Facebook, Instagram, Line, v.v.)
+const isWebView = (
+  /wv\b/.test(ua) ||                     // Android WebView: "wv"
+  /FBAN|FBAV|Instagram|Line\/|Snapchat|Twitter|Pinterest|LinkedIn|WhatsApp/i.test(ua) ||
+  (/(iPhone|iPod|iPad)/.test(ua) && !/Safari\//.test(ua) && /AppleWebKit/.test(ua))  // iOS WebView không có Safari
+);
+
+const isInApp = isTikTok || isWebView;
+const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+
+// Hiển thị banner nếu đang trong In-App Browser
 const tiktokBanner = document.getElementById('tiktok-banner');
-if (isTikTok && tiktokBanner) {
+if (isInApp && tiktokBanner) {
   tiktokBanner.classList.remove('hidden');
 }
 
