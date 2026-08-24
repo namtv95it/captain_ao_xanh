@@ -201,7 +201,7 @@ body {
   /* Độ dày của viền xoay */
   background: var(--bg2);
   transition: transform var(--transition);
-  animation: fade-up 0.8s ease both, card-float 4s ease-in-out infinite;
+  animation: fade-up 0.8s ease both;
 }
 
 .channel-card:nth-child(2) {
@@ -228,23 +228,13 @@ body {
 }
 
 .tiktok-card .card-glow {
-  background: conic-gradient(from 0deg,
-      transparent 0deg,
-      transparent 280deg,
-      var(--tiktok-cyan) 330deg,
-      #ffffff 350deg,
-      var(--tiktok-pink) 360deg);
-  animation: spin-border 3s linear infinite;
+  background: linear-gradient(135deg, var(--tiktok-cyan) 0%, rgba(255,255,255,0.1) 30%, transparent 50%, rgba(255,255,255,0.1) 70%, var(--tiktok-pink) 100%);
+  animation: none;
 }
 
 .youtube-card .card-glow {
-  background: conic-gradient(from 0deg,
-      transparent 0deg,
-      transparent 280deg,
-      #ff6600 330deg,
-      #ffffff 350deg,
-      var(--yt-red) 360deg);
-  animation: spin-border 3s linear infinite;
+  background: linear-gradient(135deg, #ff6600 0%, rgba(255,255,255,0.1) 30%, transparent 50%, rgba(255,255,255,0.1) 70%, var(--yt-red) 100%);
+  animation: none;
 }
 
 @keyframes spin-border {
@@ -322,7 +312,7 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  animation: spin-border 2.5s linear infinite;
+  animation: none;
   z-index: 1;
 }
 
@@ -332,12 +322,7 @@ body {
 }
 
 .tiktok-icon::before {
-  background: conic-gradient(from 0deg,
-      transparent 0deg,
-      transparent 270deg,
-      var(--tiktok-cyan) 330deg,
-      #ffffff 350deg,
-      var(--tiktok-pink) 360deg);
+  background: linear-gradient(135deg, var(--tiktok-cyan), var(--tiktok-pink));
 }
 
 .youtube-icon {
@@ -346,12 +331,7 @@ body {
 }
 
 .youtube-icon::before {
-  background: conic-gradient(from 0deg,
-      transparent 0deg,
-      transparent 270deg,
-      #ff6600 330deg,
-      #ffffff 350deg,
-      var(--yt-red) 360deg);
+  background: linear-gradient(135deg, #ff6600, var(--yt-red));
 }
 
 /* Biểu tượng SVG hoặc Ảnh avatar nằm trên viền xoay củ icon */
@@ -402,7 +382,7 @@ body {
   padding: 14px 32px;
   border-radius: 99px;
   transition: transform var(--transition), box-shadow var(--transition);
-  animation: pulse-cta 2s infinite;
+  animation: none;
 }
 
 @keyframes pulse-cta {
@@ -452,7 +432,7 @@ body {
   border-radius: var(--radius-card);
   pointer-events: none;
   z-index: 3;
-  animation: shine-sweep 3.5s ease-in-out infinite;
+  animation: none;
 }
 
 /* =========================================
