@@ -196,7 +196,7 @@ async function loadVideosFromFirestore() {
         </div>
         <div class="video-details">
           <h4 class="video-title">${v.title}</h4>
-          <p class="video-meta">${v.channelName || 'Phê Sữa Review'}</p>
+          <p class="video-meta">${v.channelName || 'Captain Áo Xanh'}</p>
         </div>
         <span class="video-watch-btn">Xem</span>
       </a>`).join('');
@@ -215,7 +215,7 @@ async function loadVideosFromFirestore() {
         </div>
         <div class="video-details">
           <h4 class="video-title">Quy Khư - Phần 1</h4>
-          <p class="video-meta">Phê Sữa Review</p>
+          <p class="video-meta">Captain Áo Xanh</p>
         </div>
         <span class="video-watch-btn">Xem</span>
       </a>
@@ -229,7 +229,7 @@ async function loadVideosFromFirestore() {
         </div>
         <div class="video-details">
           <h4 class="video-title">Vùng Đất Đảo Ngược Tập 4</h4>
-          <p class="video-meta">Phê Sữa Review</p>
+          <p class="video-meta">Captain Áo Xanh</p>
         </div>
         <span class="video-watch-btn">Xem</span>
       </a>`;
