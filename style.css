@@ -886,6 +886,21 @@ body {
   display: none !important;
 }
 
+.top-right-pointer {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  color: #fbbf24;
+  z-index: 100000;
+  animation: pointerBounce 0.8s infinite alternate ease-in-out;
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+}
+
+@keyframes pointerBounce {
+  0% { transform: translate(-8px, 8px); }
+  100% { transform: translate(2px, -2px); }
+}
+
 .inapp-blocker-content {
   position: relative;
   background: rgba(30, 41, 59, 0.5);
