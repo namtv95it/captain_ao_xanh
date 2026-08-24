@@ -235,3 +235,67 @@ async function loadVideosFromFirestore() {
       </a>`;
   }
 }
+
+// ─── YOUTUBE DEEP LINK HANDLER (Bypass In-App Browser) ───
+function openYouTubeLink(url) {
+  if (!url) return;
+
+  const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+  const isTikTok = /TikTok|bytedance/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+
+  // Nếu không phải link YouTube hoặc ở Desktop thì mở bình thường
+  if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+    window.open(url, '_blank');
+    return;
+  }
+
+  if (isMobile) {
+    // 1. Tách channel ID / video ID để tạo deep link
+    // Scheme hỗ trợ: vnd.youtube:// hoặc youtube://
+    let deepLink = url.replace(/^https?:\/\/(www\.)?youtube\.com\//i, 'vnd.youtube://');
+    deepLink = deepLink.replace(/^https?:\/\/youtu\.be\//i, 'vnd.youtube://watch?v=');
+
+    // Trên iOS scheme chuẩn thường là youtube:// hoặc vnd.youtube://
+    const iosDeepLink = url.replace(/^https?:\/\/(www\.)?/i, 'youtube://');
+
+    const targetAppUrl = isIOS ? iosDeepLink : deepLink;
+
+    // Thử mở App YouTube trước
+    const now = Date.now();
+    window.location.href = targetAppUrl;
+
+    // Fallback: Nếu sau 800ms vẫn ở lại trang web (chưa mở được app YouTube)
+    setTimeout(() => {
+      if (Date.now() - now < 1500) {
+        // Nếu là Android trong In-App Browser, có thể dùng Intent URI để mở App / Chrome
+        if (isAndroid) {
+          const rawUrl = url.replace(/^https?:\/\//i, '');
+          const intentUrl = `intent://${rawUrl}#Intent;scheme=https;package=com.google.android.youtube;end`;
+          window.location.href = intentUrl;
+        } else {
+          // Mở link gốc
+          window.location.href = url;
+        }
+      }
+    }, 800);
+  } else {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+}
+
+// Bắt sự kiện click toàn bộ thẻ <a> trỏ tới YouTube
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a');
+  if (!link) return;
+
+  const href = link.getAttribute('href');
+  if (!href) return;
+
+  if (href.includes('youtube.com') || href.includes('youtu.be')) {
+    e.preventDefault();
+    openYouTubeLink(href);
+  }
+});
