@@ -23,14 +23,35 @@
   <!-- Noise overlay -->
   <div class="noise"></div>
 
-  <!-- ===== THÔNG BÁO ĐẦU TRANG ===== -->
-  <div class="top-notice-bar" id="tiktok-banner">
-    <div class="top-notice-content">
-      <span class="top-notice-icon">⚠️</span>
-      <div class="top-notice-text">
-        Để xem YouTube: bấm <strong>···</strong> góc phải trên → chọn <strong>"Mở trong trình duyệt"</strong>
+  <!-- ===== IN-APP BROWSER BLOCKER (Bắt buộc mở trình duyệt ngoài) ===== -->
+  <div class="inapp-blocker" id="tiktok-banner">
+    <div class="inapp-blocker-content">
+      <div class="blocker-icon-wrapper">
+        <div class="blocker-icon-glow"></div>
+        <svg class="blocker-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
       </div>
-      <button class="top-notice-close" onclick="document.getElementById('tiktok-banner').style.display='none'" aria-label="Đóng">✕</button>
+      <h2 class="blocker-title">Trải nghiệm tốt hơn</h2>
+      <p class="blocker-desc">
+        Để trang web hoạt động mượt mà và đầy đủ tính năng nhất, vui lòng mở bằng trình duyệt mặc định của máy.
+        <br><br>
+        <span style="opacity: 0.8; font-style: italic;">Xin lỗi bạn vì sự bất tiện này! 🙏</span>
+      </p>
+      <div class="blocker-instruction">
+        <div class="step">
+          <span class="step-num">1</span>
+          <p>Bấm dấu <strong>···</strong> góc trên bên phải</p>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <p>Chọn <strong>Mở trong trình duyệt</strong></p>
+        </div>
+      </div>
+      <button class="blocker-close" onclick="document.getElementById('tiktok-banner').style.display='none'">
+        Tiếp tục xem tại đây
+      </button>
     </div>
   </div>
 
