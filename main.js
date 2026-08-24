@@ -237,28 +237,18 @@ async function loadVideosFromFirestore() {
 }
 
 // ─── TIKTOK & YOUTUBE MODAL / COPY HANDLER ───
+// ─── TIKTOK & INLINE COPY HANDLER ───
 const ua = navigator.userAgent || navigator.vendor || window.opera || '';
 const isTikTok = /TikTok|bytedance/i.test(ua);
-const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
 
 // Hiển thị banner nhắc nhở nếu đang mở bằng trình duyệt TikTok
 const tiktokBanner = document.getElementById('tiktok-banner');
-const bannerClose = document.getElementById('banner-close');
 if (isTikTok && tiktokBanner) {
   tiktokBanner.classList.remove('hidden');
-  bannerClose?.addEventListener('click', () => {
-    tiktokBanner.classList.add('hidden');
-  });
 }
 
-// Modal Elements
-const ytModal = document.getElementById('yt-modal');
-const modalCloseBtn = document.getElementById('modal-close-btn');
-const ytLinkInput = document.getElementById('yt-link-input');
-const ytCopyBtn = document.getElementById('yt-copy-btn');
-const modalDirectBtn = document.getElementById('modal-direct-btn');
+// Toast thông báo
 const toastEl = document.getElementById('toast');
-
 function showToast(msg = 'Đã sao chép đường dẫn!') {
   if (!toastEl) return;
   toastEl.textContent = msg;
@@ -268,93 +258,26 @@ function showToast(msg = 'Đã sao chép đường dẫn!') {
   }, 2500);
 }
 
-function openYtModal(url) {
-  if (!ytModal) return;
-  ytLinkInput.value = url;
-  modalDirectBtn.href = url;
-  ytModal.classList.remove('hidden');
-}
-
-function closeYtModal() {
-  if (!ytModal) return;
-  ytModal.classList.add('hidden');
-}
-
-// Xử lý sự kiện Modal
-modalCloseBtn?.addEventListener('click', closeYtModal);
-ytModal?.addEventListener('click', (e) => {
-  if (e.target === ytModal) closeYtModal();
-});
-
-// Copy link button
-ytCopyBtn?.addEventListener('click', async () => {
-  const url = ytLinkInput.value;
-  if (!url) return;
+// Copy link YouTube trực tiếp trên thẻ
+window.copyInlineYtLink = async function() {
+  const input = document.getElementById('inline-yt-input');
+  const btnText = document.getElementById('inline-copy-text');
+  const url = input ? input.value : 'https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw';
 
   try {
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(url);
-    } else {
-      // Fallback copy cho một số In-App WebView cũ
-      ytLinkInput.select();
-      ytLinkInput.setSelectionRange(0, 99999);
+    } else if (input) {
+      input.select();
+      input.setSelectionRange(0, 99999);
       document.execCommand('copy');
     }
-    showToast('✅ Đã sao chép link! Hãy dán vào Safari/Chrome nhé.');
-    ytCopyBtn.innerHTML = `
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-      <span>Đã chép!</span>
-    `;
-    setTimeout(() => {
-      ytCopyBtn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-        </svg>
-        <span>Sao chép</span>
-      `;
-    }, 2500);
+    showToast('✅ Đã sao chép link kênh YouTube!');
+    if (btnText) {
+      btnText.textContent = 'Đã chép!';
+      setTimeout(() => { btnText.textContent = 'Sao chép'; }, 2000);
+    }
   } catch (err) {
-    showToast('Lỗi khi sao chép, vui lòng copy thủ công');
+    showToast('Lỗi khi chép, vui lòng giữ link để sao chép thủ công');
   }
-});
-
-// Điều hướng thông minh: Nếu mở từ TikTok / In-App Browser thì bật Popup Modal + Copy
-function handleYouTubeClick(url) {
-  if (!url) return;
-
-  if (isTikTok) {
-    // Nếu trong TikTok WebView: mở modal hướng dẫn copy & chuyển trình duyệt
-    openYtModal(url);
-  } else if (isMobile) {
-    // Nếu trên mobile khác, thử mở deep link app
-    let deepLink = url.replace(/^https?:\/\/(www\.)?youtube\.com\//i, 'vnd.youtube://');
-    deepLink = deepLink.replace(/^https?:\/\/youtu\.be\//i, 'vnd.youtube://watch?v=');
-    window.location.href = deepLink;
-    setTimeout(() => {
-      window.location.href = url;
-    }, 600);
-  } else {
-    // Desktop mở bình thường tab mới
-    window.open(url, '_blank', 'noopener,noreferrer');
-  }
-}
-
-// Lắng nghe click tất cả link YouTube trên toàn trang
-document.addEventListener('click', (e) => {
-  const link = e.target.closest('a');
-  if (!link) return;
-
-  // Bỏ qua nếu là nút thử mở lại bên trong modal
-  if (link.id === 'modal-direct-btn') return;
-
-  const href = link.getAttribute('href');
-  if (!href) return;
-
-  if (href.includes('youtube.com') || href.includes('youtu.be')) {
-    e.preventDefault();
-    handleYouTubeClick(href);
-  }
-});
+};
