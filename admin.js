@@ -12,6 +12,8 @@ const ADMIN_HASH = 'bc691f5556269c1f3d8b1cd8504d3de0fcbc5cb731d4c3e144411d16e3fe
 
 // ─── STATE ────────────────────────────────
 let isVerifying = false;
+let isSortModeActive = false;
+let cachedVideos = [];
 
 // ─── DOM REFS ─────────────────────────────
 const pinScreen    = document.getElementById('pin-screen');
@@ -176,6 +178,7 @@ async function loadVideos() {
 }
 
 function renderVideos(videos) {
+  cachedVideos = videos;
   const listEl = document.getElementById('video-admin-list');
 
   if (!videos.length) {
@@ -195,28 +198,35 @@ function renderVideos(videos) {
 
   let html = '';
 
-  // ── Nhóm nổi bật (hàng ngang full-width) ──
-  if (featuredVideos.length) {
+  // ── Nhóm nổi bật (hàng ngang full-width) — Ẩn khi ở chế độ Sắp xếp ──
+  if (!isSortModeActive && featuredVideos.length) {
     html += '<div class="video-group-label"><span class="group-label-featured">⭐ Nổi bật</span></div>';
     html += '<div class="video-featured-list">';
     html += featuredVideos.map((v, i) => renderVideoCard(v, i, true)).join('');
     html += '</div>';
   }
 
-  // Divider nếu có cả 2 nhóm
-  if (featuredVideos.length && normalVideos.length) {
+  // Divider nếu có cả 2 nhóm và không ở chế độ Sắp xếp
+  if (!isSortModeActive && featuredVideos.length && normalVideos.length) {
     html += '<div class="video-group-divider"></div>';
   }
 
   // ── Nhóm còn lại (grid nhiều cột dạng box) ──
   if (normalVideos.length) {
-    html += `<div class="video-group-label"><span class="group-label-normal">📋 Danh sách (${normalVideos.length} video)</span></div>`;
-    html += '<div class="video-grid">';
+    const labelText = isSortModeActive 
+      ? `📋 Đang sắp xếp (${normalVideos.length})` 
+      : `📋 Danh sách (${normalVideos.length})`;
+    html += `<div class="video-group-label"><span class="group-label-normal">${labelText}</span></div>`;
+    html += `<div class="video-grid ${isSortModeActive ? 'sort-mode-active' : ''}" id="sortable-video-grid">`;
     html += normalVideos.map((v, i) => renderVideoCard(v, featuredVideos.length + i, false)).join('');
     html += '</div>';
   }
 
   listEl.innerHTML = html;
+
+  if (isSortModeActive) {
+    setupDragAndDropHandlers();
+  }
 }
 
 function renderVideoCard(v, i, isFeatured) {
@@ -254,8 +264,6 @@ function renderVideoCard(v, i, isFeatured) {
             <div class="featured-admin-tools">
               <button class="action-btn edit-btn"
                       onclick="openEditModal('${v.id}')">✏️ Sửa</button>
-              <button class="action-btn delete-btn"
-                      onclick="confirmDelete('${v.id}', \`${escHtml(v.title).replace(/`/g, '\\`')}\`)">🗑️ Xóa</button>
             </div>
           </div>
         </div>
@@ -264,18 +272,27 @@ function renderVideoCard(v, i, isFeatured) {
   }
 
   // Video thường trong Grid Box
+  const isSorting = isSortModeActive;
   return `
     <div class="video-admin-card ${!v.visible ? 'hidden-video' : ''}"
+         data-id="${v.id}"
+         ${isSorting ? 'draggable="true"' : ''}
          style="animation-delay: ${i * 0.06}s">
       
-      <!-- Top-right Quick Visibility Toggle -->
-      <div class="card-top-toggle" title="${v.visible ? 'Đang hiển thị (Bấm để ẩn)' : 'Đang ẩn (Bấm để hiển thị)'}">
-        <label class="toggle-switch card-switch">
-          <input type="checkbox" ${v.visible !== false ? 'checked' : ''}
-                 onchange="toggleVisible('${v.id}', this.checked, this)" />
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
+      ${isSorting ? `
+        <div class="drag-handle-badge">
+          <span>⋮⋮ Kéo thả</span>
+        </div>
+      ` : `
+        <!-- Top-right Quick Visibility Toggle -->
+        <div class="card-top-toggle" title="${v.visible ? 'Đang hiển thị (Bấm để ẩn)' : 'Đang ẩn (Bấm để hiển thị)'}">
+          <label class="toggle-switch card-switch">
+            <input type="checkbox" ${v.visible !== false ? 'checked' : ''}
+                   onchange="toggleVisible('${v.id}', this.checked, this)" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      `}
 
       <div class="video-admin-thumb">
         <img src="${escHtml(v.thumbnailUrl || 'captain.png')}"
@@ -285,9 +302,12 @@ function renderVideoCard(v, i, isFeatured) {
       <div class="video-admin-info">
         <h4 class="video-admin-title">${escHtml(v.title)}</h4>
         <p class="video-admin-meta">${escHtml(v.channelName || 'Phê Sữa Review')} · Thứ tự: ${v.order ?? '—'}</p>
+        ${!isSorting ? `
         <a href="${escHtml(v.url)}" target="_blank" rel="noopener noreferrer"
            class="video-admin-link">🔗 Xem video</a>
+        ` : ''}
       </div>
+      ${!isSorting ? `
       <div class="video-admin-actions">
         <button class="action-btn featured-btn"
                 onclick="setFeatured('${v.id}', true)">
@@ -298,6 +318,7 @@ function renderVideoCard(v, i, isFeatured) {
         <button class="action-btn delete-btn"
                 onclick="confirmDelete('${v.id}', \`${escHtml(v.title).replace(/`/g, '\\`')}\`)">🗑️ Xóa</button>
       </div>
+      ` : ''}
     </div>
   `;
 }
@@ -542,22 +563,165 @@ document.getElementById('video-form').addEventListener('submit', async e => {
   }
 });
 
+// ─── KÉO THẢ SẮP XẾP (DRAG & DROP) ───────
+const btnToggleSort = document.getElementById('btn-toggle-sort');
+const btnCancelSort = document.getElementById('btn-cancel-sort');
+const sortBtnText   = document.getElementById('sort-btn-text');
+
+if (btnToggleSort) {
+  btnToggleSort.addEventListener('click', async () => {
+    const btnAddVideo = document.getElementById('btn-add-video');
+
+    if (!isSortModeActive) {
+      // ── BẬT CHẾ ĐỘ SẮP XẾP ──
+      isSortModeActive = true;
+      btnToggleSort.classList.add('is-sorting');
+      sortBtnText.textContent = 'Lưu thứ tự';
+      if (btnCancelSort) btnCancelSort.classList.remove('hidden');
+      if (btnAddVideo) btnAddVideo.classList.add('hidden');
+      showToast('💡 Kéo thả các ô video để sắp xếp lại thứ tự!', 'info');
+      renderVideos(cachedVideos);
+    } else {
+      // ── LƯU THỨ TỰ MỚI VÀO FIRESTORE ──
+      btnToggleSort.disabled = true;
+      if (btnCancelSort) btnCancelSort.disabled = true;
+      sortBtnText.textContent = 'Đang lưu...';
+      
+      try {
+        await saveNewOrderToFirestore();
+        showToast('✅ Đã lưu thứ tự mới thành công!', 'success');
+      } catch (err) {
+        showToast('❌ Lỗi khi lưu thứ tự: ' + err.message, 'error');
+      } finally {
+        isSortModeActive = false;
+        btnToggleSort.disabled = false;
+        if (btnCancelSort) {
+          btnCancelSort.disabled = false;
+          btnCancelSort.classList.add('hidden');
+        }
+        if (btnAddVideo) btnAddVideo.classList.remove('hidden');
+        btnToggleSort.classList.remove('is-sorting');
+        sortBtnText.textContent = 'Sắp xếp';
+        loadVideos();
+      }
+    }
+  });
+}
+
+// ── NÚT HỦY SẮP XẾP ──
+if (btnCancelSort) {
+  btnCancelSort.addEventListener('click', () => {
+    const btnAddVideo = document.getElementById('btn-add-video');
+    isSortModeActive = false;
+    btnCancelSort.classList.add('hidden');
+    if (btnAddVideo) btnAddVideo.classList.remove('hidden');
+    btnToggleSort.classList.remove('is-sorting');
+    sortBtnText.textContent = 'Sắp xếp';
+    showToast('↩️ Đã hủy thao tác sắp xếp', 'info');
+    renderVideos(cachedVideos);
+  });
+}
+
+function setupDragAndDropHandlers() {
+  const gridEl = document.getElementById('sortable-video-grid');
+  if (!gridEl) return;
+
+  const cards = gridEl.querySelectorAll('.video-admin-card');
+  let draggedCard = null;
+
+  cards.forEach(card => {
+    card.addEventListener('dragstart', (e) => {
+      draggedCard = card;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.getAttribute('data-id'));
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      cards.forEach(c => c.classList.remove('drag-over'));
+      draggedCard = null;
+    });
+
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (card !== draggedCard) {
+        card.classList.add('drag-over');
+      }
+    });
+
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drag-over');
+    });
+
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+
+      if (draggedCard && card !== draggedCard) {
+        const allCards = Array.from(gridEl.querySelectorAll('.video-admin-card'));
+        const draggedIndex = allCards.indexOf(draggedCard);
+        const targetIndex = allCards.indexOf(card);
+
+        if (draggedIndex < targetIndex) {
+          card.after(draggedCard);
+        } else {
+          card.before(draggedCard);
+        }
+      }
+    });
+  });
+}
+
+async function saveNewOrderToFirestore() {
+  const gridEl = document.getElementById('sortable-video-grid');
+  if (!gridEl) return;
+
+  const cards = Array.from(gridEl.querySelectorAll('.video-admin-card'));
+  if (!cards.length) return;
+
+  const batch = db.batch();
+  cards.forEach((card, index) => {
+    const docId = card.getAttribute('data-id');
+    if (docId) {
+      const ref = db.collection('videos').doc(docId);
+      batch.update(ref, { order: index + 1 });
+    }
+  });
+
+  await batch.commit();
+}
+
 // ─── SET FEATURED ─────────────────────────
 window.setFeatured = async function (docId, makeFeatured) {
   try {
     const batch = db.batch();
 
     if (makeFeatured) {
-      // Bỏ featured của tất cả video trước
-      const allSnap = await db.collection('videos').where('featured', '==', true).get();
-      allSnap.docs.forEach(d => batch.update(d.ref, { featured: false }));
+      // 1. Lấy thông tin video mới chuẩn bị được chọn làm Nổi bật
+      const newFeaturedDoc = await db.collection('videos').doc(docId).get();
+      const newFeaturedOrder = newFeaturedDoc.exists ? (newFeaturedDoc.data().order ?? 99) : 99;
+
+      // 2. Tìm video đang là Nổi bật cũ
+      const oldFeaturedSnap = await db.collection('videos').where('featured', '==', true).get();
+      
+      // 3. Gán thứ tự (order) của video mới cho video nổi bật cũ & bỏ featured của nó
+      oldFeaturedSnap.docs.forEach(d => {
+        if (d.id !== docId) {
+          batch.update(d.ref, { 
+            featured: false,
+            order: newFeaturedOrder
+          });
+        }
+      });
     }
 
-    // Set featured cho video được chọn
+    // 4. Set featured cho video được chọn
     batch.update(db.collection('videos').doc(docId), { featured: makeFeatured });
     await batch.commit();
 
-    showToast(makeFeatured ? '⭐ Đã đặt làm video nổi bật!' : '✅ Đã bỏ nổi bật', 'success');
+    showToast(makeFeatured ? '⭐ Đã chuyển thành video nổi bật!' : '✅ Đã bỏ nổi bật', 'success');
     loadVideos();
   } catch (err) {
     showToast('❌ Lỗi: ' + err.message, 'error');

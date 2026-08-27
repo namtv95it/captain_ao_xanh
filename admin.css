@@ -212,7 +212,7 @@
   z-index: 1000;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   padding: 16px 40px;
   border-bottom: 1px solid var(--border);
   background: rgba(7, 7, 15, 0.9);
@@ -220,17 +220,11 @@
   -webkit-backdrop-filter: blur(25px);
 }
 
-.admin-brand-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: inherit;
-}
-
 .admin-header-actions {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   gap: 12px;
 }
 
@@ -456,6 +450,106 @@
 .admin-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.sort-header-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cancel-sort-btn {
+  background: rgba(255, 107, 107, 0.12);
+  border-color: rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+}
+
+.cancel-sort-btn:hover {
+  background: rgba(255, 107, 107, 0.25);
+  border-color: rgba(255, 107, 107, 0.5);
+  color: #ff8585;
+}
+
+/* ─── SORT HEADER BUTTON ─────────────────── */
+.sort-header-btn {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: rgba(124, 58, 237, 0.4);
+  color: #a78bfa;
+}
+
+.sort-header-btn:hover {
+  background: rgba(124, 58, 237, 0.28);
+  border-color: rgba(124, 58, 237, 0.6);
+  color: #c4b5fd;
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.3);
+}
+
+.sort-header-btn.is-sorting {
+  background: linear-gradient(135deg, #22c55e, #10b981) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 18px rgba(34, 197, 94, 0.4) !important;
+  animation: pulse-sort 2s infinite;
+}
+
+@keyframes pulse-sort {
+  0%, 100% { box-shadow: 0 4px 18px rgba(34, 197, 94, 0.4); }
+  50% { box-shadow: 0 6px 26px rgba(34, 197, 94, 0.7); }
+}
+
+/* ─── DRAG & DROP SORT MODE STYLES ───────── */
+.video-grid.sort-mode-active .video-admin-card {
+  cursor: grab;
+  position: relative;
+  border: 1.5px dashed rgba(167, 139, 250, 0.5);
+  background: rgba(124, 58, 237, 0.06);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.video-grid.sort-mode-active .video-admin-card:active {
+  cursor: grabbing;
+}
+
+.video-grid.sort-mode-active .video-admin-card:hover {
+  border-color: #a78bfa;
+  background: rgba(124, 58, 237, 0.12);
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.25);
+}
+
+/* Card đang được kéo */
+.video-admin-card.dragging {
+  opacity: 0.35;
+  transform: scale(0.96) !important;
+  border-color: #7c3aed !important;
+}
+
+/* Card được kéo đè lên (Drop target) */
+.video-admin-card.drag-over {
+  border-color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.15) !important;
+  transform: scale(1.04) !important;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.4) !important;
+}
+
+/* Tay cầm Drag Handle */
+.drag-handle-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 12;
+  background: rgba(124, 58, 237, 0.85);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* ─── VIDEO ADMIN LIST ───────────────────── */
