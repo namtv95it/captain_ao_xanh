@@ -116,8 +116,30 @@ document.getElementById('pin-toggle-btn').addEventListener('click', () => {
     : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
 });
 
+// ─── AVATAR DROPDOWN ──────────────────────
+const avatarTrigger = document.getElementById('avatar-trigger-btn');
+const avatarMenu = document.getElementById('avatar-dropdown-menu');
+
+if (avatarTrigger && avatarMenu) {
+  avatarTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isHidden = avatarMenu.classList.contains('hidden');
+    avatarMenu.classList.toggle('hidden', !isHidden);
+    avatarTrigger.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+  });
+
+  // Đóng menu khi bấm ra ngoài
+  document.addEventListener('click', (e) => {
+    if (!avatarMenu.contains(e.target) && !avatarTrigger.contains(e.target)) {
+      avatarMenu.classList.add('hidden');
+      avatarTrigger.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
 // ─── LOGOUT ───────────────────────────────
 document.getElementById('btn-logout').addEventListener('click', () => {
+  if (avatarMenu) avatarMenu.classList.add('hidden');
   sessionStorage.removeItem('cap-admin');
   pinDashboard.classList.add('hidden');
   pinScreen.classList.remove('hidden');
@@ -230,10 +252,6 @@ function renderVideoCard(v, i, isFeatured) {
             </a>
 
             <div class="featured-admin-tools">
-              <button class="action-btn featured-btn featured-active"
-                      onclick="setFeatured('${v.id}', false)">
-                ⭐ Bỏ nổi bật
-              </button>
               <button class="action-btn edit-btn"
                       onclick="openEditModal('${v.id}')">✏️ Sửa</button>
               <button class="action-btn delete-btn"

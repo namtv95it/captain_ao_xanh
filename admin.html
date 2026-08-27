@@ -74,27 +74,43 @@
   <div id="admin-dashboard" class="admin-dashboard hidden">
 
     <header class="admin-header">
-      <div class="logo-wrap">
-        <img src="captain.png" alt="Captain Áo Xanh" class="logo-img" />
-        <span class="logo-text gradient-text">Admin Panel</span>
-      </div>
       <div class="admin-header-actions">
-        <a href="index.html" class="admin-btn-secondary" id="btn-view-site">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-            <polyline points="15 3 21 3 21 9" />
-            <line x1="10" y1="14" x2="21" y2="3" />
-          </svg>
-          Xem trang chủ
-        </a>
-        <button class="admin-btn-secondary" id="btn-logout">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-          Đăng xuất
-        </button>
+        <!-- Avatar Dropdown Menu -->
+        <div class="avatar-dropdown" id="avatar-dropdown">
+          <button class="avatar-trigger-btn" id="avatar-trigger-btn" aria-expanded="false" aria-label="Menu tài khoản">
+            <img src="captain.png" alt="Admin" class="header-avatar-img" />
+            <svg class="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <div class="avatar-dropdown-menu hidden" id="avatar-dropdown-menu">
+            <div class="dropdown-header">
+              <img src="captain.png" alt="Captain Áo Xanh" class="dropdown-user-avatar" />
+              <div class="dropdown-user-info">
+                <span class="user-name">Captain Áo Xanh</span>
+                <span class="user-role">Quản trị viên</span>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="index.html" class="dropdown-item" id="btn-view-site">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+              <span>Xem trang chủ</span>
+            </a>
+            <button class="dropdown-item logout-item" id="btn-logout">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              <span>Đăng xuất</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
