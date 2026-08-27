@@ -1,143 +1,81 @@
 /* =========================================
    admin.js – Admin Panel Logic
-   PIN (6 số) + SHA-256 + Firestore CRUD
+   Xác thực mật khẩu + Firestore CRUD
    ========================================= */
 
 'use strict';
 
+// ─── HASH MẬT KHẨU MẶC ĐỊNH ──────────────
+// sha256('007011') — không salt, tính bằng:
+// node -e "require('crypto').createHash('sha256').update('007011').digest('hex')"
+const ADMIN_HASH = 'bc691f5556269c1f3d8b1cd8504d3de0fcbc5cb731d4c3e144411d16e3febbe7';
+
 // ─── STATE ────────────────────────────────
-let currentPin = '';
 let isVerifying = false;
 
 // ─── DOM REFS ─────────────────────────────
-const pinScreen     = document.getElementById('pin-screen');
-const pinDashboard  = document.getElementById('admin-dashboard');
-const pinDotsEl     = document.getElementById('pin-dots');
-const pinDots       = pinDotsEl.querySelectorAll('.pin-dot');
-const pinMessage    = document.getElementById('pin-message');
-const toastEl       = document.getElementById('toast');
+const pinScreen    = document.getElementById('pin-screen');
+const pinDashboard = document.getElementById('admin-dashboard');
+const pinWrapEl    = document.getElementById('pin-dots');
+const pinInputEl   = document.getElementById('pin-input');
+const pinMessage   = document.getElementById('pin-message');
+// toastEl được khai báo trong main.js (load trước)
 
-// ─── SHA-256 HASH (Web Crypto API) ────────
+// ─── SHA-256 (Web Crypto API – không salt) ─
 async function sha256(text) {
-  const encoder = new TextEncoder();
-  // Thêm salt để tránh rainbow table attack
-  const data = encoder.encode(text + ':captain-ao-xanh-2025');
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray  = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-// ─── FIRESTORE: Khởi tạo PIN lần đầu ─────
-async function ensurePinSetup() {
-  try {
-    const adminRef = db.collection('config').doc('admin');
-    const snap     = await adminRef.get();
-
-    if (!snap.exists) {
-      // Hash PIN mặc định "007011" và lưu lên Firestore
-      const defaultHash = await sha256('007011');
-      await adminRef.set({ pinHash: defaultHash, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-      console.log('[Admin] PIN mặc định đã được thiết lập.');
-    }
-
-    // Seed video mặc định nếu collection trống
-    await seedDefaultVideos();
-  } catch (err) {
-    console.warn('[Admin] Không thể khởi tạo PIN:', err.message);
-  }
+  const buf = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(text)
+  );
+  return Array.from(new Uint8Array(buf))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 // ─── FIRESTORE: Seed video mặc định ──────
-async function seedDefaultVideos() {
+async function ensurePinSetup() {
   try {
-    const videosSnap = await db.collection('videos').limit(1).get();
-    if (!videosSnap.empty) return; // Đã có data, bỏ qua
-
-    const defaults = [
-      {
-        title: 'Quy Khư - Phần 1',
-        url: 'https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw',
-        thumbnailUrl: 'quy-khu.png',
-        channelName: 'Phê Sữa Review',
-        order: 1,
-        visible: true,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      },
-      {
-        title: 'Vùng Đất Đảo Ngược Tập 4',
-        url: 'https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw',
-        thumbnailUrl: 'vddn-04.png',
-        channelName: 'Phê Sữa Review',
-        order: 2,
-        visible: true,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }
-    ];
-
-    const batch = db.batch();
-    defaults.forEach(v => batch.set(db.collection('videos').doc(), v));
-    await batch.commit();
-    console.log('[Admin] Video mặc định đã được seed.');
+    await seedDefaultVideos();
   } catch (err) {
-    console.warn('[Admin] Không thể seed videos:', err.message);
+    console.warn('[Admin] seedDefaultVideos error:', err.message);
   }
 }
 
-// ─── PIN UI: cập nhật chấm ───────────────
-function updateDots() {
-  pinDots.forEach((dot, i) => {
-    const filled = i < currentPin.length;
-    dot.classList.toggle('filled', filled);
-  });
-}
-
-// ─── PIN: xử lý lỗi ──────────────────────
-function showPinError(msg) {
-  currentPin = '';
-  updateDots();
+// ─── LOGIN ERROR ──────────────────────────
+function showLoginError(msg) {
+  pinInputEl.value = '';
+  pinInputEl.focus();
   pinMessage.textContent = msg;
   pinMessage.className = 'pin-message error';
-  pinDotsEl.classList.add('shake');
-  setTimeout(() => {
-    pinDotsEl.classList.remove('shake');
-  }, 600);
+  pinWrapEl.classList.add('shake');
+  setTimeout(() => pinWrapEl.classList.remove('shake'), 600);
   isVerifying = false;
 }
 
-// ─── PIN: xác minh ───────────────────────
+// ─── VERIFY PASSWORD ──────────────────────
 async function verifyPin() {
   if (isVerifying) return;
   isVerifying = true;
+
+  const submitBtn = document.getElementById('pin-submit');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.7'; }
+
+  const password = pinInputEl.value.trim();
   pinMessage.textContent = '';
   pinMessage.className = 'pin-message';
 
+  if (!password) {
+    showLoginError('⚠️ Vui lòng nhập mật khẩu!');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
+    return;
+  }
+
   try {
-    const inputHash   = await sha256(currentPin);
-    const defaultHash = await sha256('007011');  // PIN mặc định
+    const inputHash = await sha256(password);
 
-    let storedHash = defaultHash; // fallback nếu Firestore chưa có document
-
-    try {
-      const adminSnap = await db.collection('config').doc('admin').get();
-
-      if (adminSnap.exists && adminSnap.data().pinHash) {
-        // Dùng hash từ Firestore nếu đã có
-        storedHash = adminSnap.data().pinHash;
-      } else {
-        // Chưa có document → thử tạo mới (nếu rules cho phép)
-        db.collection('config').doc('admin').set({
-          pinHash: defaultHash,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(() => {/* bỏ qua nếu rules chưa cho phép ghi */});
-      }
-    } catch (fsErr) {
-      // Firestore không đọc được → dùng PIN mặc định cục bộ
-      console.warn('[Admin] Firestore read failed, using local fallback:', fsErr.message);
-    }
-
-    if (inputHash === storedHash) {
-      // ✅ Đúng PIN
-      pinDotsEl.classList.add('success');
+    if (inputHash === ADMIN_HASH) {
+      // ✅ Đúng mật khẩu
+      pinWrapEl.classList.add('success');
       pinMessage.textContent = '✅ Xác thực thành công!';
       pinMessage.className = 'pin-message';
       sessionStorage.setItem('cap-admin', 'ok');
@@ -145,40 +83,37 @@ async function verifyPin() {
       setTimeout(() => {
         pinScreen.classList.add('hidden');
         pinDashboard.classList.remove('hidden');
+        isVerifying = false;
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
         loadVideos();
-      }, 550);
+      }, 500);
+
     } else {
-      showPinError('❌ Mã PIN không đúng. Thử lại!');
+      showLoginError('❌ Mật khẩu không đúng. Thử lại!');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
     }
 
   } catch (err) {
-    showPinError('⚠️ Lỗi xác thực. Thử lại!');
+    showLoginError('⚠️ Lỗi xác thực. Thử lại!');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = ''; }
     console.error('[Admin] verifyPin error:', err);
   }
 }
 
-// ─── PIN PAD: chỉ dùng bàn phím vật lý ──
-// (Bàn phím số trên màn hình đã bị ẩn)
-// Hỗ trợ bàn phím vật lý
-document.addEventListener('keydown', (e) => {
-  if (pinScreen.classList.contains('hidden')) return;
-  if (isVerifying) return;
+// ─── FORM SUBMIT ──────────────────────────
+document.getElementById('pin-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  verifyPin();
+});
 
-  if (e.key >= '0' && e.key <= '9') {
-    if (currentPin.length < 6) {
-      currentPin += e.key;
-      updateDots();
-      const dot = pinDots[currentPin.length - 1];
-      dot.classList.add('pop');
-      setTimeout(() => dot.classList.remove('pop'), 200);
-      if (currentPin.length === 6) setTimeout(verifyPin, 120);
-    }
-  } else if (e.key === 'Backspace') {
-    if (currentPin.length > 0) {
-      currentPin = currentPin.slice(0, -1);
-      updateDots();
-    }
-  }
+// ─── TOGGLE SHOW/HIDE PASSWORD ────────────
+document.getElementById('pin-toggle-btn').addEventListener('click', () => {
+  const isPwd = pinInputEl.type === 'password';
+  pinInputEl.type = isPwd ? 'text' : 'password';
+  const icon = document.getElementById('pin-eye-icon');
+  icon.innerHTML = isPwd
+    ? `<line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
 });
 
 // ─── LOGOUT ───────────────────────────────
@@ -186,13 +121,16 @@ document.getElementById('btn-logout').addEventListener('click', () => {
   sessionStorage.removeItem('cap-admin');
   pinDashboard.classList.add('hidden');
   pinScreen.classList.remove('hidden');
-  pinDotsEl.classList.remove('success');
-  currentPin = '';
+  pinWrapEl.classList.remove('success');
+  pinInputEl.value = '';
+  pinInputEl.type = 'password';
   isVerifying = false;
-  updateDots();
   pinMessage.textContent = '';
   pinMessage.className = 'pin-message';
+  setTimeout(() => pinInputEl.focus(), 100);
 });
+
+
 
 // ─── LOAD VIDEOS ──────────────────────────
 async function loadVideos() {
@@ -538,11 +476,13 @@ let toastTimer = null;
 
 function showToast(message, type = 'info') {
   clearTimeout(toastTimer);
-  toastEl.textContent = message;
-  toastEl.className   = `toast ${type}`;
+  const _toast = document.getElementById('toast');
+  if (!_toast) return;
+  _toast.textContent = message;
+  _toast.className   = `toast ${type}`;
 
   toastTimer = setTimeout(() => {
-    toastEl.className = 'toast hidden';
+    _toast.className = 'toast hidden';
   }, 3200);
 }
 
