@@ -161,9 +161,104 @@ function renderVideos(videos) {
     return;
   }
 
-  listEl.innerHTML = videos.map((v, i) => `
+  // ── Sắp xếp: featured lên đầu, sau đó theo order ──
+  const sorted = [...videos].sort((a, b) => {
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+    return (a.order ?? 99) - (b.order ?? 99);
+  });
+
+  const featuredVideos = sorted.filter(v => v.featured);
+  const normalVideos   = sorted.filter(v => !v.featured);
+
+  let html = '';
+
+  // ── Nhóm nổi bật (hàng ngang full-width) ──
+  if (featuredVideos.length) {
+    html += '<div class="video-group-label"><span class="group-label-featured">⭐ Nổi bật</span></div>';
+    html += '<div class="video-featured-list">';
+    html += featuredVideos.map((v, i) => renderVideoCard(v, i, true)).join('');
+    html += '</div>';
+  }
+
+  // Divider nếu có cả 2 nhóm
+  if (featuredVideos.length && normalVideos.length) {
+    html += '<div class="video-group-divider"></div>';
+  }
+
+  // ── Nhóm còn lại (grid nhiều cột dạng box) ──
+  if (normalVideos.length) {
+    html += `<div class="video-group-label"><span class="group-label-normal">📋 Danh sách (${normalVideos.length} video)</span></div>`;
+    html += '<div class="video-grid">';
+    html += normalVideos.map((v, i) => renderVideoCard(v, featuredVideos.length + i, false)).join('');
+    html += '</div>';
+  }
+
+  listEl.innerHTML = html;
+}
+
+function renderVideoCard(v, i, isFeatured) {
+  if (isFeatured) {
+    return `
+      <div class="video-admin-card featured-card featured-hero-style" style="animation-delay: ${i * 0.06}s">
+        <!-- Thumbnail bên trái với nút play tròn màu cam hổ phách -->
+        <div class="featured-thumb-container">
+          <img src="${escHtml(v.thumbnailUrl || 'captain.png')}"
+               alt="${escHtml(v.title)}"
+               onerror="this.src='captain.png'" />
+          <div class="featured-play-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Thông tin bên phải -->
+        <div class="featured-details">
+          <div class="featured-text-group">
+            <h3 class="featured-main-title">${escHtml(v.title)}</h3>
+            <p class="featured-channel-sub">${escHtml(v.channelName || 'Phê Sữa Review')}</p>
+          </div>
+
+          <div class="featured-bottom-bar">
+            <a href="${escHtml(v.url)}" target="_blank" rel="noopener noreferrer" class="featured-cta-btn">
+              <span>Xem ngay</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+
+            <div class="featured-admin-tools">
+              <button class="action-btn featured-btn featured-active"
+                      onclick="setFeatured('${v.id}', false)">
+                ⭐ Bỏ nổi bật
+              </button>
+              <button class="action-btn edit-btn"
+                      onclick="openEditModal('${v.id}')">✏️ Sửa</button>
+              <button class="action-btn delete-btn"
+                      onclick="confirmDelete('${v.id}', \`${escHtml(v.title).replace(/`/g, '\\`')}\`)">🗑️ Xóa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Video thường trong Grid Box
+  return `
     <div class="video-admin-card ${!v.visible ? 'hidden-video' : ''}"
          style="animation-delay: ${i * 0.06}s">
+      
+      <!-- Top-right Quick Visibility Toggle -->
+      <div class="card-top-toggle" title="${v.visible ? 'Đang hiển thị (Bấm để ẩn)' : 'Đang ẩn (Bấm để hiển thị)'}">
+        <label class="toggle-switch card-switch">
+          <input type="checkbox" ${v.visible !== false ? 'checked' : ''}
+                 onchange="toggleVisible('${v.id}', this.checked, this)" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
       <div class="video-admin-thumb">
         <img src="${escHtml(v.thumbnailUrl || 'captain.png')}"
              alt="${escHtml(v.title)}"
@@ -175,16 +270,10 @@ function renderVideos(videos) {
         <a href="${escHtml(v.url)}" target="_blank" rel="noopener noreferrer"
            class="video-admin-link">🔗 Xem video</a>
       </div>
-      <div class="video-admin-status">
-        <span class="status-badge ${v.visible ? 'visible' : 'hidden-badge'}">
-          ${v.visible ? '👁 Hiển thị' : '🙈 Ẩn'}
-        </span>
-        ${v.featured ? '<span class="status-badge featured-badge">⭐ Nổi bật</span>' : ''}
-      </div>
       <div class="video-admin-actions">
-        <button class="action-btn featured-btn ${v.featured ? 'featured-active' : ''}"
-                onclick="setFeatured('${v.id}', ${!v.featured})">
-          ${v.featured ? '⭐ Bỏ nổi bật' : '☆ Nổi bật'}
+        <button class="action-btn featured-btn"
+                onclick="setFeatured('${v.id}', true)">
+          ☆ Nổi bật
         </button>
         <button class="action-btn edit-btn"
                 onclick="openEditModal('${v.id}')">✏️ Sửa</button>
@@ -192,8 +281,9 @@ function renderVideos(videos) {
                 onclick="confirmDelete('${v.id}', \`${escHtml(v.title).replace(/`/g, '\\`')}\`)">🗑️ Xóa</button>
       </div>
     </div>
-  `).join('');
+  `;
 }
+
 
 // Escape HTML để tránh XSS
 function escHtml(str) {
@@ -454,6 +544,20 @@ window.setFeatured = async function (docId, makeFeatured) {
   } catch (err) {
     showToast('❌ Lỗi: ' + err.message, 'error');
     console.error('[Admin] setFeatured error:', err);
+  }
+};
+
+// ─── TOGGLE VISIBLE ───────────────────────
+window.toggleVisible = async function (docId, makeVisible, btnEl) {
+  if (btnEl) { btnEl.disabled = true; btnEl.style.opacity = '0.6'; }
+  try {
+    await db.collection('videos').doc(docId).update({ visible: makeVisible });
+    showToast(makeVisible ? '👁 Đã bật hiển thị!' : '🙈 Đã ẩn video!', 'success');
+    loadVideos();
+  } catch (err) {
+    showToast('❌ Lỗi: ' + err.message, 'error');
+    console.error('[Admin] toggleVisible error:', err);
+    if (btnEl) { btnEl.disabled = false; btnEl.style.opacity = ''; }
   }
 };
 
