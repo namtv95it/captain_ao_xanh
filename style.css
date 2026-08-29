@@ -1276,3 +1276,123 @@ body {
     opacity: 1;
   }
 }
+
+/* =========================================
+   FOOTER CONTACT
+   ========================================= */
+.site-footer {
+  text-align: center;
+  padding: 2rem 1.5rem 2.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.footer-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.footer-section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.footer-divider-line {
+  display: block;
+  height: 1px;
+  width: 60px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  flex-shrink: 0;
+}
+
+.footer-contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.footer-contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  font-size: 0.83rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.2s;
+}
+
+.footer-contact-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+}
+
+/* Phone — màu xanh lá */
+.footer-contact-item:first-child:hover {
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.08);
+}
+
+.footer-contact-item:first-child .footer-contact-icon {
+  color: #4ade80;
+}
+
+/* Zalo — màu xanh dương */
+.footer-contact-zalo:hover {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.footer-contact-zalo .footer-contact-icon {
+  color: #38bdf8;
+}
+
+/* Email — màu tím */
+.footer-contact-email:hover {
+  color: #a78bfa;
+  border-color: rgba(167, 139, 250, 0.35);
+  background: rgba(167, 139, 250, 0.08);
+}
+
+.footer-contact-email .footer-contact-icon {
+  color: #a78bfa;
+}
+
+.footer-contact-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.footer-copy {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 480px) {
+  .footer-contact {
+    gap: 0.5rem 0.75rem;
+  }
+
+  .footer-contact-item {
+    font-size: 0.78rem;
+    padding: 0.4rem 0.85rem;
+  }
+}
