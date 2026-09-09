@@ -25,6 +25,9 @@
   --purple: #7c3aed;
   --purple-glow: rgba(124, 58, 237, 0.4);
 
+  --fb-blue: #1877f2;
+  --fb-dark: #001a3d;
+
   --text: #e8e8f0;
   --text-muted: #888899;
 
@@ -181,10 +184,10 @@ body {
    ========================================= */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 28px;
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px;
 }
 
 /* =========================================
@@ -206,6 +209,10 @@ body {
 
 .channel-card:nth-child(2) {
   animation-delay: 0.12s;
+}
+
+.channel-card:nth-child(3) {
+  animation-delay: 0.24s;
 }
 
 .channel-card:hover {
@@ -234,6 +241,11 @@ body {
 
 .youtube-card .card-glow {
   background: linear-gradient(135deg, #ff6600 0%, rgba(255,255,255,0.1) 30%, transparent 50%, rgba(255,255,255,0.1) 70%, var(--yt-red) 100%);
+  animation: none;
+}
+
+.facebook-card .card-glow {
+  background: linear-gradient(135deg, #4facfe 0%, rgba(255,255,255,0.1) 30%, transparent 50%, rgba(255,255,255,0.1) 70%, var(--fb-blue) 100%);
   animation: none;
 }
 
@@ -287,6 +299,12 @@ body {
   border: 1px solid rgba(255, 0, 0, 0.25);
 }
 
+.facebook-badge {
+  color: var(--fb-blue);
+  background: rgba(24, 119, 242, 0.12);
+  border: 1px solid rgba(24, 119, 242, 0.3);
+}
+
 /* Channel icon (Spinning Ring) */
 .channel-icon {
   width: 100px;
@@ -332,6 +350,15 @@ body {
 
 .youtube-icon::before {
   background: linear-gradient(135deg, #ff6600, var(--yt-red));
+}
+
+.facebook-icon {
+  background: var(--fb-dark);
+  color: var(--fb-blue);
+}
+
+.facebook-icon::before {
+  background: linear-gradient(135deg, #4facfe, var(--fb-blue));
 }
 
 /* Biểu tượng SVG hoặc Ảnh avatar nằm trên viền xoay củ icon */
@@ -419,6 +446,18 @@ body {
 }
 
 .channel-card:hover .youtube-cta {
+  animation-play-state: paused;
+  transform: scale(1.08);
+}
+
+.facebook-cta {
+  background: linear-gradient(135deg, #4facfe, var(--fb-blue));
+  color: #fff;
+  border: none;
+  box-shadow: 0 6px 30px rgba(24, 119, 242, 0.4);
+}
+
+.channel-card:hover .facebook-cta {
   animation-play-state: paused;
   transform: scale(1.08);
 }
