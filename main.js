@@ -123,118 +123,84 @@ if (window.matchMedia('(any-hover: hover)').matches) {
 }
 
 // ─── FIRESTORE VIDEO LOADER (index.html) ──
-// Chỉ chạy khi tồn tại #video-list trên trang
-if (document.getElementById('video-list')) {
-  loadFeaturedVideo();
-  loadVideosFromFirestore();
+// Chỉ chạy khi tồn tại #featured-hero-list trên trang
+if (document.getElementById('featured-hero-list')) {
+  loadAllVideos();
 }
 
-// Load 1 video nổi bật (featured: true)
-async function loadFeaturedVideo() {
-  const hero = document.getElementById('featured-hero');
-  if (!hero) return;
+// Load tất cả video visible và hiển thị ở section bên ngoài
+async function loadAllVideos() {
+  const hero   = document.getElementById('featured-hero');
+  const listEl = document.getElementById('featured-hero-list');
+  if (!hero || !listEl) return;
+
+  // Hiển thị skeleton trong khi chờ
+  listEl.innerHTML = `
+    <div class="video-item" style="pointer-events:none;opacity:0.5">
+      <div class="video-thumb" style="background:rgba(255,255,255,0.04);border-radius:12px"></div>
+      <div class="video-details"><div class="video-skeleton" style="height:14px;width:60%;margin-bottom:6px"></div><div class="video-skeleton" style="height:10px;width:35%"></div></div>
+    </div>`;
+  hero.classList.remove('hidden');
 
   try {
-    const snap = await db.collection('videos')
-      .where('featured', '==', true)
-      .limit(1)
-      .get();
-
-    if (snap.empty) return; // Không có video nổi bật → ẩn section
-
-    const v = snap.docs[0].data();
-
-    // Desktop fields
-    document.getElementById('featured-hero-img').src             = v.thumbnailUrl || 'captain.png';
-    document.getElementById('featured-hero-img').alt             = v.title;
-    document.getElementById('featured-hero-title').textContent   = v.title;
-    document.getElementById('featured-hero-channel').textContent = v.channelName || 'Phê Sữa Review';
-    document.getElementById('featured-hero-link').href           = v.url;
-
-    // Mobile overlay fields
-    document.getElementById('featured-overlay-title').textContent   = v.title;
-    document.getElementById('featured-overlay-channel').textContent = v.channelName || 'Phê Sữa Review';
-
-    hero.classList.remove('hidden');
-  } catch (err) {
-    console.warn('[index] Featured video error:', err.message);
-    // Ẩn section nếu không load được
-  }
-}
-
-async function loadVideosFromFirestore() {
-  const listEl = document.getElementById('video-list');
-  if (!listEl) return;
-
-  try {
-    // orderBy đơn giản — không cần composite index
     const snap = await db.collection('videos')
       .orderBy('order')
       .get();
 
-    // Lọc visible và loại trừ video nổi bật (featured == true) để không bị trùng
     const videos = snap.docs
-      .map(doc => ({ id: doc.id, ...doc.data() }))
-      .filter(v => v.visible !== false && !v.featured);
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(v => v.visible !== false);
 
     if (!videos.length) {
-      listEl.innerHTML = '<p style="color:var(--text-muted);text-align:center;font-size:.9rem;padding:12px 0">Chưa có video nào khác.</p>';
+      hero.classList.add('hidden');
       return;
     }
 
     listEl.innerHTML = videos.map(v => `
-      <a href="${v.url}" target="_blank" rel="noopener noreferrer" class="video-item">
-        <div class="video-thumb">
+      <a href="${v.url}" target="_blank" rel="noopener noreferrer" class="featured-hero-card">
+        <div class="featured-hero-thumb">
           <img src="${v.thumbnailUrl || 'captain.png'}"
                alt="${v.title}"
                onerror="this.src='captain.png'" />
-          <div class="play-overlay">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
+          <div class="featured-hero-overlay">
+            <div class="featured-play-btn">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+            <!-- Mobile: title overlay -->
+            <div class="featured-overlay-info">
+              <p class="featured-overlay-channel">${v.channelName || 'Captain Áo Xanh'}</p>
+              <h2 class="featured-overlay-title">${v.title}</h2>
+              <span class="featured-overlay-cta">
+                Xem ngay
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
+            </div>
           </div>
         </div>
-        <div class="video-details">
-          <h4 class="video-title">${v.title}</h4>
-          <p class="video-meta">${v.channelName || 'Captain Áo Xanh'}</p>
+        <div class="featured-hero-info">
+          <h2 class="featured-hero-title">${v.title}</h2>
+          <p class="featured-hero-channel">${v.channelName || 'Captain Áo Xanh'}</p>
+          <span class="featured-hero-cta">
+            Xem ngay
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </span>
         </div>
-        <span class="video-watch-btn">Xem</span>
+        <div class="featured-hero-glow"></div>
       </a>`).join('');
 
+    hero.classList.remove('hidden');
   } catch (err) {
-    console.warn('[index] Firestore error, dùng fallback:', err.message);
-    // Fallback: hiển thị video cứng nếu Firestore lỗi
-    listEl.innerHTML = `
-      <a href="https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw"
-         target="_blank" rel="noopener noreferrer" class="video-item">
-        <div class="video-thumb">
-          <img src="quy-khu.png" alt="Quy Khư - Phần 1" />
-          <div class="play-overlay">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
-        <div class="video-details">
-          <h4 class="video-title">Quy Khư - Phần 1</h4>
-          <p class="video-meta">Captain Áo Xanh</p>
-        </div>
-        <span class="video-watch-btn">Xem</span>
-      </a>
-      <a href="https://www.youtube.com/channel/UCrWjMw_O4UHWCBWpRJvSXJw"
-         target="_blank" rel="noopener noreferrer" class="video-item">
-        <div class="video-thumb">
-          <img src="vddn-04.png" alt="Vùng Đất Đảo Ngược Tập 4" />
-          <div class="play-overlay">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
-        <div class="video-details">
-          <h4 class="video-title">Vùng Đất Đảo Ngược Tập 4</h4>
-          <p class="video-meta">Captain Áo Xanh</p>
-        </div>
-        <span class="video-watch-btn">Xem</span>
-      </a>`;
+    console.warn('[index] Firestore error:', err.message);
+    hero.classList.add('hidden');
   }
 }
+
 
 // ─── IN-APP BROWSER DETECTION ───
 const ua = navigator.userAgent || '';

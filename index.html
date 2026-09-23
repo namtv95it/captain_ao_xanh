@@ -109,48 +109,16 @@
       </div>
     </div>
 
-    <!-- ===== FEATURED VIDEO HERO ===== -->
+    <!-- ===== DANH SÁCH VIDEO ===== -->
     <div class="featured-hero hidden" id="featured-hero">
       <div class="featured-hero-label">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          <path d="M8 5v14l11-7z" />
         </svg>
-        Video nổi bật
+        Video
       </div>
-      <a class="featured-hero-card" id="featured-hero-link" href="#" target="_blank" rel="noopener noreferrer">
-        <div class="featured-hero-thumb">
-          <img id="featured-hero-img" src="" alt="" />
-          <div class="featured-hero-overlay">
-            <div class="featured-play-btn">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
-            <!-- Mobile: title overlay (ẩn trên desktop qua CSS) -->
-            <div class="featured-overlay-info">
-              <p class="featured-overlay-channel" id="featured-overlay-channel"></p>
-              <h2 class="featured-overlay-title" id="featured-overlay-title"></h2>
-              <span class="featured-overlay-cta">
-                Xem ngay
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="featured-hero-info">
-          <h2 class="featured-hero-title" id="featured-hero-title">Đang tải...</h2>
-          <p class="featured-hero-channel" id="featured-hero-channel"></p>
-          <span class="featured-hero-cta">
-            Xem ngay
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </span>
-        </div>
-        <div class="featured-hero-glow"></div>
-      </a>
+      <!-- Danh sách tất cả video – render động từ JS -->
+      <div class="featured-hero-list" id="featured-hero-list"></div>
     </div>
 
     <div class="cards-grid">
@@ -190,21 +158,6 @@
                 </button>
               </div>
             </div> -->
-          </div>
-
-          <!-- Video nổi bật – render động từ Firestore -->
-          <div class="featured-videos">
-            <h3 class="featured-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              Video nổi bật
-            </h3>
-            <!-- Skeleton loading -->
-            <div class="video-list" id="video-list">
-              <div class="video-skeleton"></div>
-              <div class="video-skeleton"></div>
-            </div>
           </div>
 
           <div class="card-shine"></div>

@@ -801,6 +801,23 @@
   box-shadow: 0 4px 14px rgba(245, 158, 11, 0.2);
 }
 
+/* Trạng thái đang là nổi bật */
+.action-btn.featured-btn.is-featured {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.55);
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+}
+
+.action-btn.featured-btn.is-featured:hover {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.28);
+  transform: scale(1.02);
+  box-shadow: none;
+}
+
 /* ─── CARD TOP-RIGHT TOGGLE SWITCH ───────── */
 .card-top-toggle {
   position: absolute;

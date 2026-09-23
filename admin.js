@@ -186,41 +186,17 @@ function renderVideos(videos) {
     return;
   }
 
-  // ── Sắp xếp: featured lên đầu, sau đó theo order ──
-  const sorted = [...videos].sort((a, b) => {
-    if (a.featured && !b.featured) return -1;
-    if (!a.featured && b.featured) return 1;
-    return (a.order ?? 99) - (b.order ?? 99);
-  });
+  // Sắp xếp theo order
+  const sorted = [...videos].sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
 
-  const featuredVideos = sorted.filter(v => v.featured);
-  const normalVideos   = sorted.filter(v => !v.featured);
+  const labelText = isSortModeActive
+    ? `📋 Đang sắp xếp (${sorted.length})`
+    : `📋 Danh sách (${sorted.length})`;
 
-  let html = '';
-
-  // ── Nhóm nổi bật (hàng ngang full-width) — Ẩn khi ở chế độ Sắp xếp ──
-  if (!isSortModeActive && featuredVideos.length) {
-    html += '<div class="video-group-label"><span class="group-label-featured">⭐ Nổi bật</span></div>';
-    html += '<div class="video-featured-list">';
-    html += featuredVideos.map((v, i) => renderVideoCard(v, i, true)).join('');
-    html += '</div>';
-  }
-
-  // Divider nếu có cả 2 nhóm và không ở chế độ Sắp xếp
-  if (!isSortModeActive && featuredVideos.length && normalVideos.length) {
-    html += '<div class="video-group-divider"></div>';
-  }
-
-  // ── Nhóm còn lại (grid nhiều cột dạng box) ──
-  if (normalVideos.length) {
-    const labelText = isSortModeActive 
-      ? `📋 Đang sắp xếp (${normalVideos.length})` 
-      : `📋 Danh sách (${normalVideos.length})`;
-    html += `<div class="video-group-label"><span class="group-label-normal">${labelText}</span></div>`;
-    html += `<div class="video-grid ${isSortModeActive ? 'sort-mode-active' : ''}" id="sortable-video-grid">`;
-    html += normalVideos.map((v, i) => renderVideoCard(v, featuredVideos.length + i, false)).join('');
-    html += '</div>';
-  }
+  let html = `<div class="video-group-label"><span class="group-label-normal">${labelText}</span></div>`;
+  html += `<div class="video-grid ${isSortModeActive ? 'sort-mode-active' : ''}" id="sortable-video-grid">`;
+  html += sorted.map((v, i) => renderVideoCard(v, i, false)).join('');
+  html += '</div>';
 
   listEl.innerHTML = html;
 
@@ -229,49 +205,8 @@ function renderVideos(videos) {
   }
 }
 
-function renderVideoCard(v, i, isFeatured) {
-  if (isFeatured) {
-    return `
-      <div class="video-admin-card featured-card featured-hero-style" style="animation-delay: ${i * 0.06}s">
-        <!-- Thumbnail bên trái với nút play tròn màu cam hổ phách -->
-        <div class="featured-thumb-container">
-          <img src="${escHtml(v.thumbnailUrl || 'captain.png')}"
-               alt="${escHtml(v.title)}"
-               onerror="this.src='captain.png'" />
-          <div class="featured-play-badge">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </div>
-
-        <!-- Thông tin bên phải -->
-        <div class="featured-details">
-          <div class="featured-text-group">
-            <h3 class="featured-main-title">${escHtml(v.title)}</h3>
-            <p class="featured-channel-sub">${escHtml(v.channelName || 'Phê Sữa Review')}</p>
-          </div>
-
-          <div class="featured-bottom-bar">
-            <a href="${escHtml(v.url)}" target="_blank" rel="noopener noreferrer" class="featured-cta-btn">
-              <span>Xem ngay</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </a>
-
-            <div class="featured-admin-tools">
-              <button class="action-btn edit-btn"
-                      onclick="openEditModal('${v.id}')">✏️ Sửa</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  // Video thường trong Grid Box
+function renderVideoCard(v, i) {
+  // Video trong Grid Box
   const isSorting = isSortModeActive;
   return `
     <div class="video-admin-card ${!v.visible ? 'hidden-video' : ''}"
@@ -309,10 +244,6 @@ function renderVideoCard(v, i, isFeatured) {
       </div>
       ${!isSorting ? `
       <div class="video-admin-actions">
-        <button class="action-btn featured-btn"
-                onclick="setFeatured('${v.id}', true)">
-          ☆ Nổi bật
-        </button>
         <button class="action-btn edit-btn"
                 onclick="openEditModal('${v.id}')">✏️ Sửa</button>
         <button class="action-btn delete-btn"
@@ -693,41 +624,7 @@ async function saveNewOrderToFirestore() {
   await batch.commit();
 }
 
-// ─── SET FEATURED ─────────────────────────
-window.setFeatured = async function (docId, makeFeatured) {
-  try {
-    const batch = db.batch();
 
-    if (makeFeatured) {
-      // 1. Lấy thông tin video mới chuẩn bị được chọn làm Nổi bật
-      const newFeaturedDoc = await db.collection('videos').doc(docId).get();
-      const newFeaturedOrder = newFeaturedDoc.exists ? (newFeaturedDoc.data().order ?? 99) : 99;
-
-      // 2. Tìm video đang là Nổi bật cũ
-      const oldFeaturedSnap = await db.collection('videos').where('featured', '==', true).get();
-      
-      // 3. Gán thứ tự (order) của video mới cho video nổi bật cũ & bỏ featured của nó
-      oldFeaturedSnap.docs.forEach(d => {
-        if (d.id !== docId) {
-          batch.update(d.ref, { 
-            featured: false,
-            order: newFeaturedOrder
-          });
-        }
-      });
-    }
-
-    // 4. Set featured cho video được chọn
-    batch.update(db.collection('videos').doc(docId), { featured: makeFeatured });
-    await batch.commit();
-
-    showToast(makeFeatured ? '⭐ Đã chuyển thành video nổi bật!' : '✅ Đã bỏ nổi bật', 'success');
-    loadVideos();
-  } catch (err) {
-    showToast('❌ Lỗi: ' + err.message, 'error');
-    console.error('[Admin] setFeatured error:', err);
-  }
-};
 
 // ─── TOGGLE VISIBLE ───────────────────────
 window.toggleVisible = async function (docId, makeVisible, btnEl) {

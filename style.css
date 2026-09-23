@@ -723,6 +723,13 @@ body {
   animation-delay: 0.1s;
 }
 
+/* Container danh sách nhiều video nổi bật */
+.featured-hero-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .featured-hero-label {
   display: inline-flex;
   align-items: center;
